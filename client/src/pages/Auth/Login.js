@@ -38,7 +38,7 @@ const Login = (props) => {
   const loginMutation = useMutation({
     mutationFn: (data) => authApi.login(data),
     onSuccess: (data) => {
-      setStoreUser({ profile: data.data.operator, isLogged: true })
+      setStoreUser({ profile: data.data.data.operator, isLogged: true })
       navigate('/dashboard')
     },
     onError: (error) => {

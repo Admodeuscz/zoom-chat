@@ -1,10 +1,6 @@
-import { all } from 'redux-saga/effects';
-import authSaga from './auth/saga';
-import LayoutSaga from './layout/saga';
+import { all } from 'redux-saga/effects'
+import LayoutSaga from './layout/saga'
 
 export default function* rootSaga(getState) {
-    yield all([
-        authSaga(),
-        LayoutSaga()
-    ]);
+  yield all([LayoutSaga()])
 }

@@ -15,7 +15,6 @@ function Profile(props) {
   /* intilize t variable for multi language implementation */
   const { t } = useTranslation()
   const profile = useStoreUser((state) => state.profile)
-  console.log('🚀 ~ Profile ~ profile:', profile)
 
   const toggleCollapse1 = () => {
     setIsOpen1(!isOpen1)
@@ -65,7 +64,7 @@ function Profile(props) {
             <Card className='shadow-none border mb-2'>
               {/* import collaps */}
               <CustomCollapse
-                title='インフォメーションA'
+                title='インフォメーション'
                 iconClass='ri-user-2-line'
                 isOpen={isOpen1}
                 toggleCollapse={toggleCollapse1}
