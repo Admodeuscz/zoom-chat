@@ -1,44 +1,28 @@
-import React, { useEffect } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { Navigate } from 'react-router-dom';
-import withRouter from "../../components/withRouter";
+import React from 'react'
+import { connect } from 'react-redux'
+import { Navigate } from 'react-router-dom'
+import withRouter from '../../components/withRouter'
 
 //redux store
-import { logoutUser } from '../../redux/actions';
-import { createSelector } from 'reselect';
+import { logoutUser } from '../../redux/actions'
+import useStoreUser, { setStoreUser } from '../../store/useStoreUser'
 
 /**
  * Logouts the user
- * @param {*} props 
+ * @param {*} props
  */
 const Logout = (props) => {
-  const dispatch = useDispatch();
-  // const { isUserLogout } = useSelector((state) => ({
-  //     isUserLogout: state.Auth.isUserLogout,
-  //   }));
-
-  const layoutdata = createSelector(
-    (state) => state.Auth,
-    (logoutauth) => ({
-      isUserLogout: logoutauth.isUserLogout,
-    }),
-  );
+  const isLogged = useStoreUser((state) => state.isLogged)
 
   // Inside your component
-  const isUserLogout = useSelector(layoutdata);
-
-  useEffect(() => {
-    dispatch(logoutUser(props.router.navigate));
-  }, [dispatch, props.router.navigate]);
-
-  if (isUserLogout) {
-    
-    return <Navigate to="/login" />;
+  if (isLogged) {
+    setStoreUser({ profile: null, isLogged: false })
+    return <Navigate to='/login' />
   }
 
-  document.title = "Logout | Chatvia React - Responsive Bootstrap 5 Chat App"
+  document.title = 'Logout | Chatvia React - Responsive Bootstrap 5 Chat App'
 
-  return (<React.Fragment></React.Fragment>)
+  return <React.Fragment></React.Fragment>
 }
 
-export default withRouter(connect(null, { logoutUser })(Logout));
+export default withRouter(connect(null, { logoutUser })(Logout))

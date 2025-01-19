@@ -1,26 +1,24 @@
-import React, { Suspense } from "react";
-import { Navigate, Route, Routes as SwitchRoute } from "react-router-dom";
+import React, { Suspense } from 'react'
+import { Navigate, Route, Routes as SwitchRoute } from 'react-router-dom'
 
 //import routes
-import { authProtectedRoutes, publicRoutes } from "./routes";
+import { authProtectedRoutes, publicRoutes } from './routes'
 
 //import layouts
-import AuthLayout from "../layouts/AuthLayout/";
-import NonAuthLayout from "../layouts/NonAuth";
+import AuthLayout from '../layouts/AuthLayout/'
+import NonAuthLayout from '../layouts/NonAuth'
 
 const AuthProtected = (props) => {
   /*
       Navigate is un-auth access protected routes via url
       */
 
-  if (props.isAuthProtected && !localStorage.getItem("authUser")) {
-    return (
-      <Navigate to={{ pathname: "/login", state: { from: props.location } }} />
-    );
+  if (props.isAuthProtected && !localStorage.getItem('profile')) {
+    return <Navigate to={{ pathname: '/login', state: { from: props.location } }} />
   }
 
-  return <>{props.children}</>;
-};
+  return <>{props.children}</>
+}
 
 /**
  * Main Route component
@@ -59,7 +57,7 @@ const Routes = () => {
         </SwitchRoute>
       </Suspense>
     </React.Fragment>
-  );
-};
+  )
+}
 
-export default Routes;
+export default Routes
