@@ -1,10 +1,7 @@
 import React from 'react'
-import { connect } from 'react-redux'
 import { Navigate } from 'react-router-dom'
-import withRouter from '../../components/withRouter'
 
 //redux store
-import { logoutUser } from '../../redux/actions'
 import useStoreUser, { setStoreUser } from '../../store/useStoreUser'
 
 /**
@@ -25,4 +22,4 @@ const Logout = (props) => {
   return <React.Fragment></React.Fragment>
 }
 
-export default withRouter(connect(null, { logoutUser })(Logout))
+export default Logout

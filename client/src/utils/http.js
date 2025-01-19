@@ -21,13 +21,13 @@ import { isAxiosExpiredTokenError, isAxiosUnauthorizedError } from './utils'
 
 class Http {
   instance
-  _accessToken
-  _refreshToken
-  _refreshTokenRequest
+  accessToken
+  refreshToken
+  refreshTokenRequest
   constructor() {
-    this._accessToken = getAccessTokenFromLS()
-    this._refreshToken = getRefreshTokenFromLS()
-    this._refreshTokenRequest = null
+    this.accessToken = getAccessTokenFromLS()
+    this.refreshToken = getRefreshTokenFromLS()
+    this.refreshTokenRequest = null
     this.instance = axios.create({
       baseURL: config.baseUrl,
       timeout: 10000,

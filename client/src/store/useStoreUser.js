@@ -8,6 +8,5 @@ const useStoreUser = create((set) => ({
 export default useStoreUser
 
 export function setStoreUser(x) {
-  console.log('🚀 ~ setStoreUser ~ x:', x)
   useStoreUser.setState(x)
 }

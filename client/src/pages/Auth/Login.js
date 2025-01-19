@@ -1,7 +1,6 @@
 import { useMutation } from '@tanstack/react-query'
 import { useFormik } from 'formik'
 import React from 'react'
-import { connect } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
 import {
   Alert,
@@ -20,9 +19,6 @@ import {
 } from 'reactstrap'
 import * as Yup from 'yup'
 import authApi from '../../apis/auth.api'
-import withRouter from '../../components/withRouter'
-
-import { apiError } from '../../redux/actions'
 
 import { default as logodark, default as logolight } from '../../assets/images/bito_logo_mark.png'
 import { setStoreUser } from '../../store/useStoreUser'
@@ -38,7 +34,7 @@ const Login = (props) => {
   const loginMutation = useMutation({
     mutationFn: (data) => authApi.login(data),
     onSuccess: (data) => {
-      setStoreUser({ profile: data.data.operator, isLogged: true })
+      setStoreUser({ profile: data.data.data.operator, isLogged: true })
       navigate('/dashboard')
     },
     onError: (error) => {
@@ -165,9 +161,4 @@ const Login = (props) => {
   )
 }
 
-const mapStateToProps = (state) => {
-  const { user, loading, error } = state.Auth
-  return { user, loading, error }
-}
-
-export default withRouter(connect(mapStateToProps, { apiError })(Login))
+export default Login
