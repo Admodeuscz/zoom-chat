@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MessageController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -12,3 +13,11 @@ Route::controller(AuthController::class)->group(function () {
         Route::get('auth/me', 'me');
     });
 });
+
+Route::controller(MessageController::class)
+->middleware('auth:api')
+->group(function () {
+    Route::get('channels/{channel_id}/messages', 'getMessages');
+    Route::get('channels/{message_id}/messages/sub', 'getSubMessages');
+});
+

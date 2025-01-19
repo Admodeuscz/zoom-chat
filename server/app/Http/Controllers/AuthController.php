@@ -45,6 +45,8 @@ class AuthController extends Controller
 
         $token = Auth::login($operator);
         $refreshToken = $this->generateRefreshToken($operator);
+        $operator = Operator::with('team')->find($operator->op_id);
+
         return $this->responseApi([
             'operator' => $operator,
             'access_token' => $token,
@@ -78,9 +80,10 @@ class AuthController extends Controller
         }
 
         $refreshToken = $this->generateRefreshToken(Auth::user());
+        $operator = Operator::with('team')->find(Auth::user()->op_id);
 
         return $this->responseApi([
-            'operator' => Auth::user(),
+            'operator' => $operator,
             'access_token' => $token,
             'refresh_token' => $refreshToken
         ], true, 200);
