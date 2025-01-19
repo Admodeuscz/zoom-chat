@@ -30,7 +30,7 @@ class DatabaseSeeder extends Seeder
             'op_name' => 'テストユーザー1',
             'op_name_kana' => 'テストユーザー1',
             'pwd' => Hash::make('12345678'),
-            'team_id' => $team1->id,
+            'team_id' => $team1->team_id,
         ]);
 
         Operator::create([
@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
             'op_name' => 'テストユーザー2',
             'op_name_kana' => 'テストユーザー2',
             'pwd' => Hash::make('12345678'),
-            'team_id' => $team2->id,
+            'team_id' => $team2->team_id,
         ]);
     }
 }
