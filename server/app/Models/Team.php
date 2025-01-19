@@ -2,11 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Team extends Model
 {
+    use HasFactory;
     protected $table = 'teams';
     protected $primaryKey = 'team_id';
     public $timestamps = false;
@@ -25,4 +27,4 @@ class Team extends Model
     {
         return $this->hasMany(Operator::class, 'team_id', 'team_id');
     }
-} 
+}

@@ -2,9 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Operator;
+use App\Models\Team;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,11 +14,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Tạo team đầu tiên
+        $team1 = Team::create([
+            'team_name' => 'テストチーム1',
+        ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Tạo team thứ hai
+        $team2 = Team::create([
+            'team_name' => 'テストチーム2',
+        ]);
+
+        // Tạo operators
+        Operator::create([
+            'op_id' => 'operator01',
+            'op_name' => 'テストユーザー1',
+            'op_name_kana' => 'テストユーザー1',
+            'pwd' => Hash::make('12345678'),
+            'team_id' => $team1->id,
+        ]);
+
+        Operator::create([
+            'op_id' => 'operator02',
+            'op_name' => 'テストユーザー2',
+            'op_name_kana' => 'テストユーザー2',
+            'pwd' => Hash::make('12345678'),
+            'team_id' => $team2->id,
         ]);
     }
 }

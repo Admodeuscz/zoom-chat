@@ -2,14 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Support\Facades\Hash;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
 
 class Operator extends Authenticatable implements JWTSubject
 {
+    use HasFactory;
+
     protected $table = 'operators';
     protected $primaryKey = 'op_id';
     public $incrementing = false;
@@ -62,4 +65,4 @@ class Operator extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Channel::class, 'created_by', 'op_id');
     }
-} 
+}
