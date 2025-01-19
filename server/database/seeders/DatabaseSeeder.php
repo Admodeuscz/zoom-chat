@@ -14,17 +14,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Tạo team đầu tiên
         $team1 = Team::create([
             'team_name' => 'テストチーム1',
         ]);
 
-        // Tạo team thứ hai
         $team2 = Team::create([
             'team_name' => 'テストチーム2',
         ]);
 
-        // Tạo operators
         Operator::create([
             'op_id' => 'operator01',
             'op_name' => 'テストユーザー1',
