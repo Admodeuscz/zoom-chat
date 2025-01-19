@@ -5,8 +5,10 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use PHPOpenSourceSaver\JWTAuth\Contracts\JWTSubject;
+use Illuminate\Support\Facades\Hash;
 
-class Operator extends Authenticatable
+class Operator extends Authenticatable implements JWTSubject
 {
     protected $table = 'operators';
     protected $primaryKey = 'op_id';
@@ -30,6 +32,26 @@ class Operator extends Authenticatable
         'regist_date',
         'update_date',
     ];
+
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->pwd;
+    }
+
+    public function setPasswordAttribute($value)
+    {
+        $this->attributes['pwd'] = Hash::make($value);
+    }
 
     public function team(): BelongsTo
     {
