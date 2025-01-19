@@ -32,7 +32,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->responseApi(validator->errors(), false, 422);
+            return $this->responseApi($validator->errors(), false, 422);
         }
 
         $operator = Operator::create([
