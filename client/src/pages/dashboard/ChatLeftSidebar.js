@@ -1,35 +1,30 @@
-import React from "react";
-import { connect } from "react-redux";
+import React from 'react'
+import { connect } from 'react-redux'
 
-import { TabContent, TabPane } from "reactstrap";
+import { TabContent, TabPane } from 'reactstrap'
 
-import Chats from "./Tabs/Chats";
-import Profile from "./Tabs/Profile";
+import Profile from './Tabs/Profile'
 
 function ChatLeftSidebar(props) {
-  const activeTab = props.activeTab;
+  const activeTab = props.activeTab
 
   return (
     <React.Fragment>
-      <div className="chat-leftsidebar me-lg-1">
+      <div className='chat-leftsidebar me-lg-1'>
         <TabContent activeTab={activeTab}>
-          <TabPane tabId="profile" id="pills-user">
+          <TabPane tabId='profile' id='pills-user'>
             <Profile />
-          </TabPane>
-
-          <TabPane tabId="chat" id="pills-chat">
-            <Chats recentChatList={props.recentChatList} />
           </TabPane>
         </TabContent>
       </div>
     </React.Fragment>
-  );
+  )
 }
 
 const mapStatetoProps = (state) => {
   return {
-    ...state.Layout,
-  };
-};
+    ...state.Layout
+  }
+}
 
-export default connect(mapStatetoProps, null)(ChatLeftSidebar);
+export default connect(mapStatetoProps, null)(ChatLeftSidebar)
