@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Message;
-use App\Models\Channel;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use App\Traits\HasApiResponses;
-use Illuminate\Support\Facades\Validator;
 use App\Events\GroupMessageSent;
 use App\Events\UserMessageSent;
+use App\Models\Channel;
+use App\Models\Message;
+use App\Traits\HasApiResponses;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
 {
@@ -31,11 +31,11 @@ class MessageController extends Controller
                 ->orWhere('receiver_id', Auth::id())
                 ->orWhere('sender_id', Auth::id());
         });
-        
+
         if ($before) {
             $query->where('message_id', '<', $before);
         }
-        
+
         $messages = $query
             ->limit($limit)
             ->get();
@@ -89,9 +89,8 @@ class MessageController extends Controller
             broadcast(new GroupMessageSent($message))->toOthers();
         }
 
-        $message->load('sender.team', 'receiver.team', 'parentMessage.sender.team');
 
-        return $this->responseApi($message, true, 200);
+        return $this->responseApi([], true, 200);
     }
 }
 

@@ -7,7 +7,9 @@ import UserChat from './UserChat/index'
 
 import Pusher from 'pusher-js'
 import { setStoreChat } from '../../store/useStoreChat'
+import useStoreUser from '../../store/useStoreUser'
 const DashboardPage = (props) => {
+  const profile = useStoreUser((state) => state.profile)
   useEffect(() => {
     window.Pusher = Pusher
 
@@ -21,10 +23,13 @@ const DashboardPage = (props) => {
     })
 
     window.Echo.channel('group-chat').listen('GroupMessageSent', (e) => {
-      setStoreChat((prev) => ({
-        ...prev,
-        messages: [...prev.messages, e.message]
-      }))
+      const isSender = e.message.sender_id === profile.op_id
+      if (!isSender) {
+        setStoreChat((prev) => ({
+          ...prev,
+          messages: [...prev.messages, e.message]
+        }))
+      }
     })
   }, [])
   return (
