@@ -67,6 +67,7 @@ class Http {
         return response
       },
       (error) => {
+        console.log('🚀 ~ Http ~ constructor ~ error:', error)
         // Chỉ toast lỗi không phải 422 và 401
         if (![HttpStatusCode.UnprocessableEntity, HttpStatusCode.Unauthorized].includes(error.response?.status)) {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
