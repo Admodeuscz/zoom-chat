@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Button, Col, Form, Input, Row } from 'reactstrap'
+import useStoreChat from '../../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 
 const ChatInput = ({ onaddMessage }) => {
   const [textMessage, settextMessage] = useState('')
   const { toUser } = useStoreUser()
+  const { members } = useStoreChat()
   const handleChange = (e) => {
     settextMessage(e.target.value)
   }
@@ -24,6 +26,13 @@ const ChatInput = ({ onaddMessage }) => {
     }
   }
 
+  const handleChangeToUser = (e) => {
+    const selectedMember = members.find((m) => m.op_id === e.target.value)
+    setStoreUser({
+      toUser: selectedMember
+    })
+  }
+
   return (
     <React.Fragment>
       <div className='chat-input-section p-2 p-lg-3 border-top mb-0'>
@@ -34,8 +43,8 @@ const ChatInput = ({ onaddMessage }) => {
                 <div className='d-flex align-items-center mb-2'>
                   <span className='me-2'>To:</span>
                   <Input
-                    value={toUser}
-                    onChange={(e) => setStoreUser({ toUser: e.target.value })}
+                    value={toUser?.op_id || 'all'}
+                    onChange={handleChangeToUser}
                     type='select'
                     className='form-select form-select-sm text-truncate'
                     style={{
@@ -43,15 +52,11 @@ const ChatInput = ({ onaddMessage }) => {
                     }}
                   >
                     <option value='all'>All</option>
-                    <option value='uid1' className='text-truncate'>
-                      User 1
-                    </option>
-                    <option value='uid2' className='text-truncate'>
-                      User 2
-                    </option>
-                    <option value='cbartell' className='text-truncate'>
-                      User 3
-                    </option>
+                    {members.map((member, key) => (
+                      <option value={member.op_id} key={key}>
+                        {member.op_name}
+                      </option>
+                    ))}
                   </Input>
                 </div>
                 <Row>

@@ -11,29 +11,33 @@ const userNameStyle = {
 }
 
 const DisplayName = memo(({ message, profile }) => {
+  console.log('🚀 ~ DisplayName ~ message:', message)
   const isSender = message.sender_id === profile.op_id
-  const senderName = isSender ? 'You' : message.sender?.op_name || 'Unknown'
-  const receiverName = message.receiver?.op_name || 'Unknown'
+  const teamNameSender = `${Boolean(message.sender?.team?.team_name) ? `(${message.sender?.team?.team_name})` : ''}`
+  const teamNameReceiver = `${Boolean(message.receiver?.team?.team_name) ? `(${message.receiver?.team?.team_name})` : ''}`
+  const senderName = isSender ? 'You' : `${message.sender?.op_name} ${teamNameSender}` || 'Unknown'
+  const receiverName = `${message.receiver?.op_name} ${teamNameReceiver}` || 'Unknown'
 
-  const handleUserClick = (userId) => {
-    setStoreUser({ toUser: userId })
+  const handleUserClick = (user) => {
+    console.log('🚀 ~ handleUserClick ~ user:', user)
+    setStoreUser({ toUser: user })
   }
 
-  const UserNameLink = ({ name, userId }) => (
-    <span style={userNameStyle} onClick={() => handleUserClick(userId)} role='button' tabIndex={0}>
+  const UserNameLink = ({ name, user }) => (
+    <span style={userNameStyle} onClick={() => handleUserClick(user)} role='button' tabIndex={0}>
       {name}
     </span>
   )
 
   if (!message.receiver_id || !message.receiver) {
-    return <span>{isSender ? 'You' : <UserNameLink name={senderName} userId={message.sender_id} />}</span>
+    return <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
   }
 
   return (
     <>
-      <span>{isSender ? 'You' : <UserNameLink name={senderName} userId={message.sender_id} />}</span>
+      <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
       <span> to </span>
-      <UserNameLink name={receiverName} userId={message.receiver_id} />
+      <UserNameLink name={receiverName} user={message?.receiver} />
       <span> (Direct Message)</span>
     </>
   )

@@ -22,3 +22,11 @@ export function encodeQueryData(data) {
   for (let d in data) ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]))
   return ret.join('&')
 }
+
+export function genAvatar(name) {
+  const nameParts = name.split(' ')
+  if (nameParts.length === 1) {
+    return nameParts[0].charAt(0)
+  }
+  return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`
+}

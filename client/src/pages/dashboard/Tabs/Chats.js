@@ -1,189 +1,75 @@
-import React, { Component } from 'react';
-import { Input, InputGroup } from "reactstrap";
-import { Link } from "react-router-dom";
-import { connect } from "react-redux";
+import React from 'react'
+import { Link } from 'react-router-dom'
 
 //simplebar
-import SimpleBar from "simplebar-react";
+import SimpleBar from 'simplebar-react'
 
 //actions
-import { setconversationNameInOpenChat, activeUser } from "../../../redux/actions";
 
 //components
-import OnlineUsers from "./OnlineUsers";
+import useStoreChat from '../../../store/useStoreChat'
+import { genAvatar } from '../../../utils/utils'
+import OnlineUsers from './OnlineUsers'
 
-class Chats extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            searchChat: "",
-            recentChatList: this.props.recentChatList
-        }
-        this.openUserChat = this.openUserChat.bind(this);
-        this.handleChange = this.handleChange.bind(this);
-    }
+const Chats = () => {
+  const { members } = useStoreChat()
 
-    componentDidMount() {
-        var li = document.getElementById("conversation" + this.props.active_user);
-        if (li) {
-            li.classList.add("active");
-        }
-    }
+  return (
+    <React.Fragment>
+      <div>
+        <div className='px-4 pt-4'>
+          <h4 className='mb-4'>Chats</h4>
+          {/* <div className='search-box chat-search-box'>
+            <InputGroup className='mb-3 rounded-3'>
+              <span className='input-group-text text-muted bg-light pe-1 ps-3' id='basic-addon1'>
+                <i className='ri-search-line search-icon font-size-18'></i>
+              </span>
+              <Input
+                type='text'
+                value={this.state.searchChat}
+                onChange={(e) => this.handleChange(e)}
+                className='form-control bg-light'
+                placeholder='ユーザーを検索'
+              />
+            </InputGroup>
+          </div> */}
+        </div>
 
-    componentDidUpdate(prevProps) {
-        if (prevProps !== this.props) {
-            this.setState({
-                recentChatList: this.props.recentChatList
-            });
-        }
-    }
+        <OnlineUsers />
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (this.props.recentChatList !== nextProps.recentChatList) {
-            this.setState({
-                recentChatList: nextProps.recentChatList,
-            });
-        }
-    }
-
-    handleChange(e) {
-        this.setState({ searchChat: e.target.value });
-        var search = e.target.value;
-        let conversation = this.state.recentChatList;
-        let filteredArray = [];
-
-        //find conversation name from array
-        for (let i = 0; i < conversation.length; i++) {
-            if (conversation[i].name.toLowerCase().includes(search) || conversation[i].name.toUpperCase().includes(search))
-                filteredArray.push(conversation[i]);
-        }
-
-        //set filtered items to state
-        this.setState({ recentChatList: filteredArray })
-
-        //if input value is blanck then assign whole recent chatlist to array
-        if (search === "") this.setState({ recentChatList: this.props.recentChatList })
-    }
-
-    openUserChat(e, chat) {
-
-        e.preventDefault();
-
-        //find index of current chat in array
-        var index = this.props.recentChatList.indexOf(chat);
-
-        // set activeUser 
-        this.props.activeUser(index);
-
-        var chatList = document.getElementById("chat-list");
-        var clickedItem = e.target;
-        var currentli = null;
-
-        if (chatList) {
-            var li = chatList.getElementsByTagName("li");
-            //remove coversation user
-            for (var i = 0; i < li.length; ++i) {
-                if (li[i].classList.contains('active')) {
-                    li[i].classList.remove('active');
-                }
-            }
-            //find clicked coversation user
-            for (var k = 0; k < li.length; ++k) {
-                if (li[k].contains(clickedItem)) {
-                    currentli = li[k];
-                    break;
-                }
-            }
-        }
-
-        //activation of clicked coversation user
-        if (currentli) {
-            currentli.classList.add('active');
-        }
-
-        var userChat = document.getElementsByClassName("user-chat");
-        if (userChat) {
-            userChat[0].classList.add("user-chat-show");
-        }
-
-        //removes unread badge if user clicks
-        var unread = document.getElementById("unRead" + chat.id);
-        if (unread) {
-            unread.style.display = "none";
-        }
-    }
-
-    render() {
-        return (
-            <React.Fragment>
-                <div>
-                    <div className="px-4 pt-4">
-                        <h4 className="mb-4">Chats</h4>
-                        <div className="search-box chat-search-box">
-                            <InputGroup className="mb-3 rounded-3">
-                                <span className="input-group-text text-muted bg-light pe-1 ps-3" id="basic-addon1">
-                                    <i className="ri-search-line search-icon font-size-18"></i>
-                                </span>
-                                <Input type="text" value={this.state.searchChat} onChange={(e) => this.handleChange(e)} className="form-control bg-light" placeholder="ユーザーを検索" />
-                            </InputGroup>
+        {/* Start chat-message-list  */}
+        <div>
+          <h5 className='mb-3 px-3 font-size-16'>ユーザー一覧</h5>
+          <SimpleBar className='chat-message-list'>
+            <ul className='list-unstyled chat-list chat-user-list px-2' id='chat-list'>
+              {members.map((member, key) => (
+                <li key={key}>
+                  <Link>
+                    <div className='d-flex align-items-center'>
+                      <div className={'chat-user-img ' + member.status + ' align-self-center ms-0'}>
+                        <div className='avatar-xs'>
+                          <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                            {genAvatar(member.op_name)}
+                          </span>
                         </div>
+                        {member.status && <span className='user-status'></span>}
+                      </div>
+
+                      <div className='flex-grow-1 overflow-hidden'>
+                        <h5 className='text-truncate font-size-15 mb-0 ms-3'>
+                          {member.op_name} ({member.team.team_name})
+                        </h5>
+                      </div>
                     </div>
-
-                    <OnlineUsers />
-
-                    {/* Start chat-message-list  */}
-                    <div>
-                        <h5 className="mb-3 px-3 font-size-16">ユーザー一覧</h5>
-                        <SimpleBar className="chat-message-list">
-
-                            <ul className="list-unstyled chat-list chat-user-list px-2" id="chat-list">
-                                {
-                                    this.state.recentChatList.map((chat, key) =>
-                                        <li key={key}>
-                                            <Link>
-                                                <div className="d-flex">
-                                                    {
-                                                        chat.profilePicture === "Null" ?
-                                                            <div className={"chat-user-img " + chat.status + " align-self-center ms-0"}>
-                                                                <div className="avatar-xs">
-                                                                    <span className="avatar-title rounded-circle bg-primary-subtle text-primary">
-                                                                        {chat.name.split('　').map(name => name.charAt(0)).join('')}
-                                                                    </span>
-                                                                </div>
-                                                                {
-                                                                    chat.status && <span className="user-status"></span>
-                                                                }
-                                                            </div>
-                                                            :
-                                                            <div className={"chat-user-img " + chat.status + " align-self-center ms-0"}>
-                                                                <img src={chat.profilePicture} className="rounded-circle avatar-xs" alt="chatting system" />
-                                                                {
-                                                                    chat.status && <span className="user-status"></span>
-                                                                }
-                                                            </div>
-                                                    }
-
-                                                    <div className="flex-grow-1 overflow-hidden">
-                                                        <h5 className="text-truncate font-size-15 mb-1 ms-3">{chat.name}</h5>
-                                                    </div>
-                                                    <div className="font-size-11">{chat.messages && chat.messages.length > 0 ? chat.messages[(chat.messages).length - 1].time : null}</div>
-                                                </div>
-                                            </Link>
-                                        </li>
-                                    )
-                                }
-                            </ul>
-                        </SimpleBar>
-                    </div>
-                </div>
-            </React.Fragment>
-        );
-    }
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </SimpleBar>
+        </div>
+      </div>
+    </React.Fragment>
+  )
 }
 
-const mapStateToProps = (state) => {
-    const { active_user } = state.Chat;
-    return { active_user };
-};
-
-export default connect(mapStateToProps, { setconversationNameInOpenChat, activeUser })(Chats);
+export default Chats

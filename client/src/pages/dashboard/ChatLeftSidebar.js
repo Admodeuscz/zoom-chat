@@ -18,7 +18,7 @@ function ChatLeftSidebar(props) {
           </TabPane>
 
           <TabPane tabId='chat' id='pills-chat'>
-            <Chats recentChatList={props.recentChatList} />
+            <Chats />
           </TabPane>
         </TabContent>
       </div>
