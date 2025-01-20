@@ -23,7 +23,7 @@ class MessageController extends Controller
         $before = $request->input('before');
         $limit = $request->input('limit', 20);
 
-        $query = Message::with(['sender', 'receiver'])
+        $query = Message::with(['sender.team', 'receiver.team'])
         ->where('parent_message_id', null)
         ->where('is_deleted', false)
         ->where(function ($query) {
@@ -41,7 +41,7 @@ class MessageController extends Controller
             ->get();
 
         foreach ($messages as $message) {
-            $replies = Message::with(['sender', 'receiver'])
+            $replies = Message::with(['sender.team', 'receiver.team'])
                 ->where('parent_message_id', $message->message_id)
                 ->where('is_deleted', false)
                 ->where(function ($query) {
@@ -89,7 +89,7 @@ class MessageController extends Controller
             broadcast(new GroupMessageSent($message))->toOthers();
         }
 
-        $message->load('sender', 'receiver', 'parentMessage.sender');
+        $message->load('sender.team', 'receiver.team', 'parentMessage.sender.team');
 
         return $this->responseApi($message, true, 200);
     }
