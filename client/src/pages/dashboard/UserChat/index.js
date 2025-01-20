@@ -1,20 +1,17 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
 import SimpleBar from 'simplebar-react'
 
 import ChatInput from './ChatInput'
 import UserHead from './UserHead'
 
-//Import Images
 import avatar1 from '../../../assets/images/users/avatar-1.jpg'
 
-//Import Mock Data
-
-//i18n
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import chatApi, { URL_GET_MESSAGES } from '../../../apis/chat.api'
+import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
+import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
 import DisplayName from './DisplayName'
 
@@ -22,19 +19,25 @@ function UserChat() {
   const ref = useRef()
   const { t } = useTranslation()
 
-  const [chatMessages, setChatMessages] = useState([])
   const profile = useStoreUser((state) => state.profile)
+  const messages = useStoreChat((state) => state.messages)
 
-  const { data: messages } = useQuery({
-    queryKey: [URL_GET_MESSAGES],
+  const { mutate: sendMessage } = useMutation({
+    mutationFn: (data) => chatApi.sendMessage(data)
+  })
+
+  const { data: messagesData } = useQuery({
+    queryKey: [URL_MESSAGES],
     queryFn: () => chatApi.getMessages()
   })
 
   useEffect(() => {
-    if (messages) {
-      setChatMessages(messages?.data?.data || [])
+    if (messagesData) {
+      setStoreChat({
+        messages: messagesData?.data?.data || []
+      })
     }
-  }, [messages])
+  }, [messagesData])
 
   useEffect(() => {
     if (ref.current) {
@@ -43,25 +46,32 @@ function UserChat() {
         ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
       }
     }
-  }, [chatMessages])
+  }, [messages])
 
   const addMessage = (message, toUser) => {
     let messageObj = null
-    let d = new Date()
     messageObj = {
-      message_id: chatMessages.length + 1,
       content: message,
-      created_at: d.toISOString(),
+      receiver_id: toUser?.op_id || null,
+      created_at: new Date().toISOString(),
       sender_id: profile.op_id,
-      receiver_id: toUser,
       parent_message_id: null,
-      is_deleted: false,
       sender: profile
     }
+    if (!messageObj) return
+    setStoreChat((prev) => ({
+      ...prev,
+      messages: [...prev.messages, messageObj]
+    }))
+    sendMessage(
+      { content: messageObj.content, receiver_id: messageObj.receiver_id },
+      {
+        onSuccess: () => {
+          scrollToBottom()
+        }
+      }
+    )
 
-    if (messageObj) {
-      setChatMessages((prevMessages) => [...prevMessages, messageObj])
-    }
     scrollToBottom()
   }
 
@@ -72,11 +82,11 @@ function UserChat() {
   }
 
   const deleteMessage = (messageId) => {
-    setChatMessages((prevMessages) => prevMessages.filter((message) => message.message_id !== messageId))
+    setStoreChat((prevMessages) => prevMessages.filter((message) => message.message_id !== messageId))
   }
 
   const renderMessages = () => {
-    return chatMessages.map((message, index) => {
+    return messages.map((message, index) => {
       return (
         <li key={index}>
           <div className='conversation-list'>

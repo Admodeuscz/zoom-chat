@@ -29,7 +29,7 @@ const ChatInput = ({ onaddMessage }) => {
   const handleChangeToUser = (e) => {
     const selectedMember = members.find((m) => m.op_id === e.target.value)
     setStoreUser({
-      toUser: selectedMember
+      toUser: selectedMember || null
     })
   }
 

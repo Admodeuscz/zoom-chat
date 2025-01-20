@@ -11,7 +11,6 @@ const userNameStyle = {
 }
 
 const DisplayName = memo(({ message, profile }) => {
-  console.log('🚀 ~ DisplayName ~ message:', message)
   const isSender = message.sender_id === profile.op_id
   const teamNameSender = `${Boolean(message.sender?.team?.team_name) ? `(${message.sender?.team?.team_name})` : ''}`
   const teamNameReceiver = `${Boolean(message.receiver?.team?.team_name) ? `(${message.receiver?.team?.team_name})` : ''}`
@@ -19,7 +18,6 @@ const DisplayName = memo(({ message, profile }) => {
   const receiverName = `${message.receiver?.op_name} ${teamNameReceiver}` || 'Unknown'
 
   const handleUserClick = (user) => {
-    console.log('🚀 ~ handleUserClick ~ user:', user)
     setStoreUser({ toUser: user })
   }
 

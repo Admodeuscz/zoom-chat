@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN, URL_REGISTER } from '../apis/auth.api'
+import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from '../apis/auth.api'
 import config from '../constants/config'
 import {
   clearLS,
@@ -49,7 +49,7 @@ class Http {
     this.instance.interceptors.response.use(
       (response) => {
         const { url } = response.config
-        if (url === URL_LOGIN || url === URL_REGISTER) {
+        if (url === URL_LOGIN) {
           const data = response.data
 
           this.accessToken = data.data.access_token
