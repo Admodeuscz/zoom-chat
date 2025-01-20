@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MessageController;
+use App\Http\Controllers\OperatorController;
 use Illuminate\Support\Facades\Route;
 
 Route::controller(AuthController::class)->group(function () {
@@ -19,5 +20,9 @@ Route::controller(MessageController::class)
 ->group(function () {
     Route::get('messages', 'getMessages');
     Route::post('messages', 'sendMessage');
+});
+
+Route::controller(OperatorController::class)->group(function () {
+    Route::get('operators', 'all');
 });
 
