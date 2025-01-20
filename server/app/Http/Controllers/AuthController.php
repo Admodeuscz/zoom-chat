@@ -75,7 +75,7 @@ class AuthController extends Controller
 
         if (!$token = Auth::attempt($credentials)) {
             return $this->responseApi([
-                'message' => 'Thông tin đăng nhập không chính xác',
+                'message' => 'Unauthorized',
             ], false, 401);
         }
 
@@ -93,7 +93,7 @@ class AuthController extends Controller
     {
         Auth::logout();
         return $this->responseApi([
-            'message' => 'Đăng xuất thành công',
+            'message' => 'Logout successfully',
         ], true, 200);
     }
 

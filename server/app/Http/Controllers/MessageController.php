@@ -65,7 +65,7 @@ class MessageController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->responseApi($validator->errors(), false, 400);
+            return $this->responseApi($validator->errors(), false, 422);
         }
 
         $parentMessageId = $request->input('parent_id');
@@ -88,7 +88,6 @@ class MessageController extends Controller
         } else {
             broadcast(new GroupMessageSent($message))->toOthers();
         }
-
 
         return $this->responseApi([], true, 200);
     }

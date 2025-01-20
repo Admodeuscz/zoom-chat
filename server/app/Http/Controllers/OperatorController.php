@@ -9,7 +9,9 @@ class OperatorController extends Controller
 {
     public function all()
     {
-        $operators = Operator::with('team')->get();
+        $operators = Operator::with('team')
+            ->where('op_id', '!=', Auth::id())
+            ->get();
         return response()->json($operators);
     }
 }
