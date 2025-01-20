@@ -9,20 +9,32 @@ import UserHead from './UserHead'
 import avatar1 from '../../../assets/images/users/avatar-1.jpg'
 
 //Import Mock Data
-import { MOCK_MESSAGES, MOCK_USER } from '../../../data/chat.data'
 
 //i18n
+import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
+import chatApi, { URL_GET_MESSAGES } from '../../../apis/chat.api'
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
 import useStoreUser from '../../../store/useStoreUser'
+import DisplayName from './DisplayName'
 
 function UserChat() {
   const ref = useRef()
   const { t } = useTranslation()
 
-  const [chatMessages, setChatMessages] = useState(MOCK_MESSAGES)
-  const [currentUser] = useState(MOCK_USER)
+  const [chatMessages, setChatMessages] = useState([])
   const profile = useStoreUser((state) => state.profile)
+
+  const { data: messages } = useQuery({
+    queryKey: [URL_GET_MESSAGES],
+    queryFn: () => chatApi.getMessages()
+  })
+
+  useEffect(() => {
+    if (messages) {
+      setChatMessages(messages?.data?.data || [])
+    }
+  }, [messages])
 
   useEffect(() => {
     if (ref.current) {
@@ -36,15 +48,15 @@ function UserChat() {
   const addMessage = (message, toUser) => {
     let messageObj = null
     let d = new Date()
-    var n = d.getSeconds()
     messageObj = {
-      id: chatMessages.length + 1,
-      message: message,
-      time: '00:' + n,
-      userType: toUser,
-      image: avatar1,
-      isFileMessage: false,
-      isImageMessage: false
+      message_id: chatMessages.length + 1,
+      content: message,
+      created_at: d.toISOString(),
+      sender_id: profile.op_id,
+      receiver_id: toUser,
+      parent_message_id: null,
+      is_deleted: false,
+      sender: profile
     }
 
     if (messageObj) {
@@ -59,8 +71,55 @@ function UserChat() {
     }
   }
 
-  const deleteMessage = (id) => {
-    setChatMessages((prevMessages) => prevMessages.filter((message) => message.id !== id))
+  const deleteMessage = (messageId) => {
+    setChatMessages((prevMessages) => prevMessages.filter((message) => message.message_id !== messageId))
+  }
+
+  const renderMessages = () => {
+    return chatMessages.map((message, index) => {
+      return (
+        <li key={index}>
+          <div className='conversation-list'>
+            <div className='chat-avatar'>
+              <img src={avatar1} alt='chatting system' />
+            </div>
+
+            <div className='user-chat-content'>
+              <div className='conversation-name'>
+                <div>
+                  <span className='user-name'>
+                    <DisplayName message={message} profile={profile} />
+                  </span>
+                </div>
+                <span className='chat-time mb-0'>
+                  <i className='ri-time-line align-middle'></i>{' '}
+                  <span className='align-middle'>{new Date(message.created_at).toLocaleTimeString()}</span>
+                </span>
+              </div>
+
+              <div className='ctext-wrap'>
+                <div className='ctext-wrap-content'>
+                  <p className='mb-0'>{message.content}</p>
+                </div>
+                <UncontrolledDropdown className='align-self-start ms-1'>
+                  <DropdownToggle tag='a' className='text-muted'>
+                    <i className='ri-more-2-fill'></i>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem>
+                      {t('Copy')} <i className='ri-file-copy-line float-end text-muted'></i>
+                    </DropdownItem>
+                    <DropdownItem onClick={() => deleteMessage(message.message_id)}>
+                      Delete <i className='ri-delete-bin-line float-end text-muted'></i>
+                    </DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </div>
+            </div>
+          </div>
+        </li>
+      )
+    })
   }
 
   return (
@@ -68,58 +127,15 @@ function UserChat() {
       <div className='user-chat w-100 overflow-hidden'>
         <div className='d-lg-flex'>
           <div className='w-100 overflow-hidden position-relative'>
-            <UserHead user={currentUser} />
+            <UserHead user={profile} />
 
             <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-5 p-lg-4' id='messages'>
-              <ul className='list-unstyled mb-0'>
-                {chatMessages.map((chat, key) => (
-                  <li key={key}>
-                    <div className='conversation-list'>
-                      <div className='chat-avatar'>
-                        <img src={chat.image} alt='chatting system' />
-                      </div>
-
-                      <div className='user-chat-content'>
-                        <div className='conversation-name'>
-                          <div>
-                            <span className='user-name'>{chat.userType === 'sender' ? 'You' : currentUser.name}</span>
-                            <span></span>
-                          </div>
-
-                          <span className='chat-time mb-0'>
-                            <i className='ri-time-line align-middle'></i>{' '}
-                            <span className='align-middle'>{chat.time}</span>
-                          </span>
-                        </div>
-
-                        <div className='ctext-wrap'>
-                          <div className='ctext-wrap-content'>
-                            {chat.message && <p className='mb-0'>{chat.message}</p>}
-                          </div>
-                          <UncontrolledDropdown className='align-self-start ms-1'>
-                            <DropdownToggle tag='a' className='text-muted'>
-                              <i className='ri-more-2-fill'></i>
-                            </DropdownToggle>
-                            <DropdownMenu>
-                              <DropdownItem>
-                                {t('Copy')} <i className='ri-file-copy-line float-end text-muted'></i>
-                              </DropdownItem>
-                              <DropdownItem onClick={() => deleteMessage(chat.id)}>
-                                Delete <i className='ri-delete-bin-line float-end text-muted'></i>
-                              </DropdownItem>
-                            </DropdownMenu>
-                          </UncontrolledDropdown>
-                        </div>
-                      </div>
-                    </div>
-                  </li>
-                ))}
-              </ul>
+              <ul className='list-unstyled mb-0'>{renderMessages()}</ul>
             </SimpleBar>
 
             <ChatInput onaddMessage={addMessage} />
           </div>
-          <UserProfileSidebar user={currentUser} />
+          <UserProfileSidebar user={profile} />
         </div>
       </div>
     </React.Fragment>

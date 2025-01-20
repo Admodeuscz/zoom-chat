@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Button, Col, Form, Input, Row } from 'reactstrap'
+import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 
-function ChatInput({ onaddMessage }) {
+const ChatInput = ({ onaddMessage }) => {
   const [textMessage, settextMessage] = useState('')
-  const [toUser, setToUser] = useState('all')
-
+  const { toUser } = useStoreUser()
   const handleChange = (e) => {
     settextMessage(e.target.value)
   }
@@ -35,13 +35,11 @@ function ChatInput({ onaddMessage }) {
                   <span className='me-2'>To:</span>
                   <Input
                     value={toUser}
-                    onChange={(e) => setToUser(e.target.value)}
+                    onChange={(e) => setStoreUser({ toUser: e.target.value })}
                     type='select'
                     className='form-select form-select-sm text-truncate'
                     style={{
-                      width: '120px',
-                      backgroundColor: '#0e71ed',
-                      color: 'white'
+                      width: '120px'
                     }}
                   >
                     <option value='all'>All</option>
@@ -51,7 +49,7 @@ function ChatInput({ onaddMessage }) {
                     <option value='uid2' className='text-truncate'>
                       User 2
                     </option>
-                    <option value='uid3' className='text-truncate'>
+                    <option value='cbartell' className='text-truncate'>
                       User 3
                     </option>
                   </Input>

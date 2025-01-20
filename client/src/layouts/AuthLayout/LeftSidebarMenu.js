@@ -23,6 +23,7 @@ import { useMutation } from '@tanstack/react-query'
 import { createSelector } from 'reselect'
 import authApi from '../../apis/auth.api'
 import { setStoreUser } from '../../store/useStoreUser'
+import { clearLS } from '../../utils/auth'
 
 function LeftSidebarMenu(props) {
   const dispatch = useDispatch()
@@ -32,6 +33,7 @@ function LeftSidebarMenu(props) {
     mutationFn: authApi.logout,
     onSuccess: () => {
       setStoreUser({ profile: null, isLogged: false })
+      clearLS()
       navigate('/login')
     }
   })

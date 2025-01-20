@@ -3,6 +3,7 @@ import { connect } from 'react-redux'
 
 import { TabContent, TabPane } from 'reactstrap'
 
+import Chats from './Tabs/Chats'
 import Profile from './Tabs/Profile'
 
 function ChatLeftSidebar(props) {
@@ -14,6 +15,10 @@ function ChatLeftSidebar(props) {
         <TabContent activeTab={activeTab}>
           <TabPane tabId='profile' id='pills-user'>
             <Profile />
+          </TabPane>
+
+          <TabPane tabId='chat' id='pills-chat'>
+            <Chats recentChatList={props.recentChatList} />
           </TabPane>
         </TabContent>
       </div>

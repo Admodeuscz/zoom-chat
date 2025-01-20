@@ -1,27 +1,24 @@
-import axios from "axios";
-import HttpStatusCode from "../constants/httpStatusCode";
+import axios from 'axios'
+import HttpStatusCode from '../constants/httpStatusCode'
 
 export function isAxiosError(error) {
-  return axios.isAxiosError(error);
+  return axios.isAxiosError(error)
 }
 
 export function isAxiosUnprocessableEntityError(error) {
-  return (
-    isAxiosError(error) &&
-    error.response?.status === HttpStatusCode.UnprocessableEntity
-  );
+  return isAxiosError(error) && error.response?.status === HttpStatusCode.UnprocessableEntity
 }
 
 export function isAxiosUnauthorizedError(error) {
-  return (
-    isAxiosError(error) &&
-    error.response?.status === HttpStatusCode.Unauthorized
-  );
+  return isAxiosError(error) && error?.status === HttpStatusCode.Unauthorized
 }
 
 export function isAxiosExpiredTokenError(error) {
-  return (
-    isAxiosUnauthorizedError(error) &&
-    error.response?.data?.data?.name === "EXPIRED_TOKEN"
-  );
+  return isAxiosUnauthorizedError(error) && error.response?.data?.data?.name === 'EXPIRED_TOKEN'
+}
+
+export function encodeQueryData(data) {
+  let ret = []
+  for (let d in data) ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]))
+  return ret.join('&')
 }
