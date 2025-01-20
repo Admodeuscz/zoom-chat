@@ -2,10 +2,10 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('channel.group', function ($user) {
-    return $user !== null;
+Broadcast::channel('group-chat', function ($user) {
+    return true;
 });
 
-Broadcast::channel('channel.user.{userId}', function ($user, $userId) {
+Broadcast::channel('user-chat.{userId}', function ($user, $userId) {
     return $user->id === $userId;
 });

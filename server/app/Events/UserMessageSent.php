@@ -11,7 +11,7 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Message;
 
-class UserMessageSent
+class UserMessageSent implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -24,16 +24,11 @@ class UserMessageSent
 
     public function broadcastOn()
     {
-        return new PrivateChannel('channel.user.' . $this->message->receiver_id);
+        return new PrivateChannel('user-chat.' . $this->message->receiver_id);
     }
 
     public function broadcastWith()
     {
         return ['message' => $this->message->load('sender', 'receiver', 'parentMessage.sender')];
-    }
-
-    public function broadcastAs()
-    {
-        return 'user.message.sent';
     }
 }
