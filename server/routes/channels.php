@@ -2,8 +2,10 @@
 
 use Illuminate\Support\Facades\Broadcast;
 
-Broadcast::channel('channel.{channelId}', function ($user, $channelId) {
-    return $user->channels()
-        ->where('channel_id', $channelId)
-        ->exists();
+Broadcast::channel('channel.group', function ($user) {
+    return $user !== null;
+});
+
+Broadcast::channel('channel.user.{userId}', function ($user, $userId) {
+    return $user->id === $userId;
 });

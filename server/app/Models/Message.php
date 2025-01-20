@@ -13,22 +13,21 @@ class Message extends Model
     protected $primaryKey = 'message_id';
 
     protected $fillable = [
-        'channel_id',
         'sender_id',
         'content',
-        'message_type',
+        'receiver_id',
         'parent_message_id',
         'is_deleted',
     ];
 
-    public function channel(): BelongsTo
-    {
-        return $this->belongsTo(Channel::class, 'channel_id', 'channel_id');
-    }
-
     public function sender(): BelongsTo
     {
         return $this->belongsTo(Operator::class, 'sender_id', 'op_id');
+    }
+    
+    public function receiver(): BelongsTo
+    {
+        return $this->belongsTo(Operator::class, 'receiver_id', 'op_id');
     }
 
     public function parentMessage(): BelongsTo
@@ -46,4 +45,4 @@ class Message extends Model
         return $this->belongsToMany(Operator::class, 'message_reads', 'message_id', 'op_id')
             ->withPivot('read_at');
     }
-} 
+}

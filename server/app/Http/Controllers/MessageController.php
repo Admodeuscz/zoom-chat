@@ -7,6 +7,9 @@ use App\Models\Channel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Traits\HasApiResponses;
+use Illuminate\Support\Facades\Validator;
+use App\Events\GroupMessageSent;
+use App\Events\UserMessageSent;
 
 class MessageController extends Controller
 {
@@ -14,64 +17,81 @@ class MessageController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth:api');
     }
 
-    function getMessages($channel_id, Request $request) {
-        $channel = Channel::findOrFail($channel_id);
-        if (!$channel->members()->where('op_id', Auth::id())->exists()) {
-            return $this->responseApi(null, false, 403, 'Không có quyền truy cập channel này');
-        }
-
+    function getMessages(Request $request) {
         $before = $request->input('before');
         $limit = $request->input('limit', 20);
 
-        $query = Message::with(['sender', 'replies.sender'])
-            ->where('channel_id', $channel_id)
-            ->where('parent_message_id', null)
-            ->where('is_deleted', false);
-
+        $query = Message::with(['sender', 'receiver'])
+        ->where('parent_message_id', null)
+        ->where('is_deleted', false)
+        ->where(function ($query) {
+            $query->where('receiver_id', null)
+                ->orWhere('receiver_id', Auth::id())
+                ->orWhere('sender_id', Auth::id());
+        });
+        
         if ($before) {
             $query->where('message_id', '<', $before);
         }
-
+        
         $messages = $query
-            ->orderBy('message_id', 'desc')
             ->limit($limit)
             ->get();
 
+        foreach ($messages as $message) {
+            $replies = Message::with(['sender', 'receiver'])
+                ->where('parent_message_id', $message->message_id)
+                ->where('is_deleted', false)
+                ->where(function ($query) {
+                    $query->where('receiver_id', null)
+                        ->orWhere('receiver_id', Auth::id())
+                        ->orWhere('sender_id', Auth::id());
+                })
+                ->get();
+
+            $message->replies = $replies;
+        }
+
         return $this->responseApi($messages, true, 200);
     }
 
-    function getSubMessages($message_id) {
-        $message = Message::findOrFail($message_id);
-        
-        if (!$message->channel->members()->where('op_id', Auth::id())->exists()) {
-            return $this->responseApi(null, false, 403, 'Không có quyền truy cập tin nhắn này');
+    public function sendMessage(Request $request) {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string',
+            'parent_id' => 'nullable|exists:messages,message_id',
+            'receiver_id' => 'nullable|exists:operators,op_id',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->responseApi($validator->errors(), false, 400);
         }
 
-        $messages = Message::with('sender')
-            ->where('parent_message_id', $message_id)
-            ->where('is_deleted', false)
-            ->orderBy('created_at', 'asc')
-            ->get();
-
-        return $this->responseApi($messages, true, 200);
-    }
-
-    public function deleteMessage($message_id)
-    {
-        $message = Message::findOrFail($message_id);
-        
-        if ($message->sender_id !== Auth::id()) {
-            return $this->responseApi(null, false, 403, 'Bạn không có quyền xóa tin nhắn này');
+        $parentMessageId = $request->input('parent_id');
+        if ($parentMessageId) {
+            $parentMessage = Message::find($parentMessageId);
+            if ($parentMessage->parent_message_id) {
+                $parentMessageId = $parentMessage->parent_message_id;
+            }
         }
 
-        $message->update(['is_deleted' => true]);
+        $message = Message::create([
+            'sender_id' => Auth::id(),
+            'content' => $request->input('content'),
+            'parent_message_id' => $parentMessageId,
+            'receiver_id' => $request->input('receiver_id'),
+        ]);
 
-        broadcast(new MessageEvent($message))->toOthers();
+        if ($message->receiver_id) {
+            broadcast(new UserMessageSent($message))->toOthers();
+        } else {
+            broadcast(new GroupMessageSent($message))->toOthers();
+        }
 
-        return $this->responseApi(null, true, 200, 'Tin nhắn đã được xóa');
+        $message->load('sender', 'receiver', 'parentMessage.sender');
+
+        return $this->responseApi($message, true, 200);
     }
 }
 

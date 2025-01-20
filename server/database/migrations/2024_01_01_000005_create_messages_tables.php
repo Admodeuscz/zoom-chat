@@ -10,7 +10,6 @@ return new class extends Migration
     {
         Schema::create('messages', function (Blueprint $table) {
             $table->bigIncrements('message_id');
-            $table->unsignedBigInteger('channel_id');
             $table->string('sender_id', 32);
             $table->text('content');
             $table->string('message_type', 20);
@@ -19,7 +18,6 @@ return new class extends Migration
             $table->timestamp('updated_at')->useCurrent();
             $table->boolean('is_deleted')->default(false);
 
-            $table->foreign('channel_id')->references('channel_id')->on('channels');
             $table->foreign('sender_id')->references('op_id')->on('operators');
             $table->foreign('parent_message_id')->references('message_id')->on('messages');
         });

@@ -10,7 +10,8 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use App\Models\Message;
-class MessageEvent implements ShouldBroadcast
+
+class UserMessageSent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
@@ -23,13 +24,16 @@ class MessageEvent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel('channel.' . $this->message->channel_id);
+        return new PrivateChannel('channel.user.' . $this->message->receiver_id);
     }
 
     public function broadcastWith()
     {
-        return [
-            'message' => $this->message->load('sender')
-        ];
+        return ['message' => $this->message->load('sender', 'receiver', 'parentMessage.sender')];
+    }
+
+    public function broadcastAs()
+    {
+        return 'user.message.sent';
     }
 }

@@ -17,7 +17,7 @@ Route::controller(AuthController::class)->group(function () {
 Route::controller(MessageController::class)
 ->middleware('auth:api')
 ->group(function () {
-    Route::get('channels/{channel_id}/messages', 'getMessages');
-    Route::get('channels/{message_id}/messages/sub', 'getSubMessages');
+    Route::get('messages', 'getMessages');
+    Route::post('messages', 'sendMessage');
 });
 
