@@ -24,16 +24,11 @@ class GroupMessageSent implements ShouldBroadcast
 
     public function broadcastOn()
     {
-        return new PresenceChannel('channel.group');
+        return new Channel('group-chat');
     }
 
     public function broadcastWith()
     {
         return ['message' => $this->message->load('sender', 'receiver', 'parentMessage.sender')];
-    }
-
-    public function broadcastAs()
-    {
-        return 'group.message.sent';
     }
 }
