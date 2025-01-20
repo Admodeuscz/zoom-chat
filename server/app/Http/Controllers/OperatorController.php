@@ -9,7 +9,7 @@ class OperatorController extends Controller
 {
     public function all()
     {
-        $operators = Operator::all();
+        $operators = Operator::with('team')->get();
         return response()->json($operators);
     }
 }
