@@ -65,7 +65,7 @@ const UserHead = ({ user }) => {
               <DropdownToggle className='nav-link' tag='a'>
                 <div className='avatar-xs'>
                   <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
-                    {user.op_name.charAt(0)}
+                    {user?.op_name?.charAt(0)}
                   </span>
                 </div>
               </DropdownToggle>
