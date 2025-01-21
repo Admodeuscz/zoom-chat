@@ -37,7 +37,6 @@ class MessageController extends Controller
         }
 
         $messages = $query
-            ->limit($limit)
             ->get();
 
         foreach ($messages as $message) {
