@@ -9,14 +9,14 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('auth/register', 'register');
     Route::post('auth/login', 'login');
     Route::post('auth/refresh', 'refresh');
-    Route::middleware('auth:api')->group(function () {
+    Route::middleware('auth:sanctum')->group(function () {
         Route::post('auth/logout', 'logout');
         Route::get('auth/me', 'me');
     });
 });
 
 Route::controller(MessageController::class)
-->middleware('auth:api')
+->middleware('auth:sanctum')
 ->group(function () {
     Route::get('messages', 'getMessages');
     Route::post('messages', 'sendMessage');

@@ -1,25 +1,18 @@
 <?php
 
 namespace App\Http\Controllers;
-use App\Http\Requests\Auth\LoginRequest;
-use App\Http\Requests\Auth\RegisterRequest;
+
 use App\Models\Operator;
+use App\Traits\HasApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use App\Traits\HasApiResponses;
-use PHPOpenSourceSaver\JWTAuth\Facades\JWTAuth;
-
+use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
     use HasApiResponses;
-
-    protected function generateRefreshToken($user)
-    {
-        return JWTAuth::claims(['refresh' => true])->fromUser($user);
-    }
 
     public function register(Request $request)
     {
@@ -32,7 +25,7 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->responseApi($validator->errors(), false, 422);
+            return $this->responseApi(['errors' => $validator->errors()], false, 422);
         }
 
         $operator = Operator::create([
@@ -43,18 +36,12 @@ class AuthController extends Controller
             'team_id' => $request->team_id
         ]);
 
-        $token = Auth::login($operator);
-        $refreshToken = $this->generateRefreshToken($operator);
-        $operator = Operator::with('team')->find($operator->op_id);
+        $token = $operator->createToken('auth-token')->plainTextToken;
 
         return $this->responseApi([
             'operator' => $operator,
-            'access_token' => $token,
-            'refresh_token' => $refreshToken
-            ],
-            true,
-            201
-        );
+            'access_token' => $token
+        ], true, 201);
     }
 
     public function login(Request $request)
@@ -65,67 +52,43 @@ class AuthController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return $this->responseApi($validator->errors(), false, 422);
+            return $this->responseApi(['errors' => $validator->errors()], false, 422);
         }
 
-        $credentials = [
-            'op_id' => $request->op_id,
-            'password' => $request->pwd
-        ];
+        $operator = Operator::where('op_id', $request->op_id)->first();
 
-        if (!$token = Auth::attempt($credentials)) {
-            return $this->responseApi([
-                'message' => 'Unauthorized',
-            ], false, 401);
+        if (!$operator || !Hash::check($request->pwd, $operator->pwd)) {
+            return $this->responseApi(['message' => 'Unauthorized'], false, 401);
         }
 
-        $refreshToken = $this->generateRefreshToken(Auth::user());
-        $operator = Operator::with('team')->find(Auth::user()->op_id);
+        $token = $operator->createToken('auth-token')->plainTextToken;
 
         return $this->responseApi([
             'operator' => $operator,
-            'access_token' => $token,
-            'refresh_token' => $refreshToken
+            'access_token' => $token
         ], true, 200);
     }
 
-    public function logout()
+    public function me(Request $request)
     {
-        Auth::logout();
-        return $this->responseApi([
-            'message' => 'Logout successfully',
-        ], true, 200);
+        return $this->responseApi($request->user(), true, 200);
     }
 
-    public function me()
+    public function logout(Request $request)
     {
-        return $this->responseApi(Auth::user(), true, 200);
+        $request->user()->currentAccessToken()->delete();
+        return $this->responseApi(['message' => 'Logout successfully'], true, 200);
     }
 
     public function refresh(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'refresh_token' => 'required|string'
-        ]);
-
-        if ($validator->fails()) {
-            return $this->responseApi($validator->errors(), false, 422);
-        }
-
-        $refreshToken = $request->input('refresh_token');
-
-        try {
-            JWTAuth::setToken($refreshToken);
-            if (!JWTAuth::getClaim('refresh')) {
-                return $this->responseApi(['error' => 'Invalid refresh token'], false, 401);
-            }
-            $newToken = JWTAuth::refresh($refreshToken);
-        } catch (JWTException $e) {
-            return $this->responseApi(['error' => 'Could not refresh token'], false, 500);
-        }
+        $user = $request->user();
+        $user->tokens()->delete();
+        $token = $user->createToken('auth-token')->plainTextToken;
 
         return $this->responseApi([
-            'access_token' => $newToken,
+            'operator' => $user,
+            'access_token' => $token
         ], true, 200);
     }
 }
