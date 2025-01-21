@@ -46,6 +46,7 @@ const UserChat = () => {
       const messageObj = {
         content: message,
         receiver_id: toUser?.op_id || null,
+        receiver: toUser || null,
         created_at: new Date().toISOString(),
         sender_id: profile.op_id,
         parent_message_id: null,
