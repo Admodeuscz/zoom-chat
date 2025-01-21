@@ -2,19 +2,14 @@
 
 namespace App\Events;
 
-use Illuminate\Broadcasting\Channel;
-use Illuminate\Broadcasting\InteractsWithSockets;
-use Illuminate\Broadcasting\PresenceChannel;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
-use Illuminate\Foundation\Events\Dispatchable;
-use Illuminate\Queue\SerializesModels;
 use App\Models\Message;
+use Illuminate\Broadcasting\Channel;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Queue\SerializesModels;
 
 class GroupMessageSent implements ShouldBroadcastNow
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use SerializesModels;
 
     public $message;
 
@@ -30,6 +25,9 @@ class GroupMessageSent implements ShouldBroadcastNow
 
     public function broadcastWith()
     {
-        return ['message' => $this->message->load('sender.team', 'receiver.team', 'parentMessage.sender.team')];
+        // Chỉ trả về các trường cần thiết
+        return [
+            'message' => $this->message,
+        ];
     }
 }

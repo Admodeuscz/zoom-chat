@@ -25,6 +25,7 @@ const DashboardPage = (props) => {
     window.Echo.channel('group-chat').listen('GroupMessageSent', (e) => {
       const isSender = e.message.sender_id === profile.op_id
       if (!isSender) {
+        console.log(new Date().getTime());
         setStoreChat((prev) => ({
           ...prev,
           messages: [...prev.messages, e.message]

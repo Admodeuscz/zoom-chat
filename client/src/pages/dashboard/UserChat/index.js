@@ -63,6 +63,9 @@ function UserChat() {
       ...prev,
       messages: [...prev.messages, messageObj]
     }))
+
+    console.log(new Date().getTime());
+
     sendMessage(
       { content: messageObj.content, receiver_id: messageObj.receiver_id },
       {
