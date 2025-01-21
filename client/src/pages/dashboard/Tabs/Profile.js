@@ -15,7 +15,6 @@ function Profile(props) {
   /* intilize t variable for multi language implementation */
   const { t } = useTranslation()
   const profile = useStoreUser((state) => state?.profile)
-  console.log('🚀 ~ Profile ~ profile:', profile)
 
   const toggleCollapse1 = () => {
     setIsOpen1(!isOpen1)

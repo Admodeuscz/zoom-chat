@@ -33,6 +33,10 @@ const DashboardPage = (props) => {
         }))
       }
     })
+
+    return () => {
+      window.Echo.leaveChannel('group-chat')
+    }
   }, [])
   return (
     <ChatProvider>

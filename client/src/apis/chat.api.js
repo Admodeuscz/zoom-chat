@@ -12,7 +12,11 @@ const chatApi = {
     return await http.get(URL_GET_ALL_MEMBER)
   },
   sendMessage: async (data) => {
-    return await http.post(URL_MESSAGES, data)
+    return await http.post(URL_MESSAGES, data, {
+      headers: {
+        'X-Socket-Id': window.Echo.socketId()
+      }
+    })
   }
 }
 
