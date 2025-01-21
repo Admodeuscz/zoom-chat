@@ -26,9 +26,11 @@ function UserChat() {
     mutationFn: (data) => chatApi.sendMessage(data)
   })
 
-  const { data: messagesData } = useQuery({
+  const { data: messagesData, isFetching } = useQuery({
     queryKey: [URL_MESSAGES],
-    queryFn: () => chatApi.getMessages()
+    queryFn: () => chatApi.getMessages(),
+    gcTime: 0,
+    staleTime: 0
   })
 
   useEffect(() => {
@@ -64,7 +66,7 @@ function UserChat() {
       messages: [...prev.messages, messageObj]
     }))
 
-    console.log(new Date().getTime());
+    console.log(new Date().getTime())
 
     sendMessage(
       { content: messageObj.content, receiver_id: messageObj.receiver_id },
@@ -89,6 +91,7 @@ function UserChat() {
   }
 
   const renderMessages = () => {
+    if (isFetching) return
     return messages.map((message, index) => {
       return (
         <li key={index}>

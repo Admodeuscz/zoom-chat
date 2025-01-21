@@ -5,7 +5,6 @@ import { createSelector } from 'reselect'
 import { changeLayoutMode } from '../../../redux/actions'
 
 import { useNavigate } from 'react-router-dom'
-import authApi from '../../../apis/auth.api'
 import { openUserSidebar, setFullUser } from '../../../redux/actions'
 import { setStoreChat } from '../../../store/useStoreChat'
 import { setStoreUser } from '../../../store/useStoreUser'
@@ -40,9 +39,8 @@ const UserHead = ({ user }) => {
   }
 
   const handleLogout = async () => {
-    await authApi.logout()
     clearLS()
-    setStoreUser({ profile: null, isLogged: false })
+    setStoreUser({ profile: {}, isLogged: false })
     setStoreChat({ members: [], active_user: null })
     navigate('/login')
   }

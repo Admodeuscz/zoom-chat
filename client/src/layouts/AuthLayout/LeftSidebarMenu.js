@@ -20,7 +20,6 @@ import logo from '../../assets/images/logo-dark.webp'
 import avatar1 from '../../assets/images/users/avatar-1.jpg'
 
 import { createSelector } from 'reselect'
-import authApi from '../../apis/auth.api'
 import { setStoreChat } from '../../store/useStoreChat'
 import { setStoreUser } from '../../store/useStoreUser'
 import { clearLS } from '../../utils/auth'
@@ -57,9 +56,8 @@ function LeftSidebarMenu(props) {
   }
 
   const handleLogout = async () => {
-    await authApi.logout()
     clearLS()
-    setStoreUser({ profile: null, isLogged: false })
+    setStoreUser({ profile: {}, isLogged: false })
     setStoreChat({ members: [], active_user: null })
     navigate('/login')
   }
