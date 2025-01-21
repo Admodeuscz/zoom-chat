@@ -3,7 +3,6 @@ import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from
 
 import { useTranslation } from 'react-i18next'
 import avatar1 from '../../../assets/images/users/avatar-1.jpg'
-import useStoreChat from '../../../store/useStoreChat'
 import DisplayName from './DisplayName'
 
 const MessageItem = React.memo(({ currentUser, message, t }) => {
@@ -46,15 +45,13 @@ const MessageItem = React.memo(({ currentUser, message, t }) => {
   )
 })
 
-const MessageList = ({ isLoading, currentUser }) => {
+const MessageList = ({ isLoading, currentUser, messages }) => {
   const { t } = useTranslation()
-
-  const messages = useStoreChat((state) => state.messages)
-  if (isLoading || messages.length === 0) return null
+  if (isLoading || !messages || messages.length === 0) return null
 
   return (
     <ul className='list-unstyled mb-0'>
-      {messages.map((message, index) => (
+      {messages?.reverse()?.map((message, index) => (
         <li key={index}>
           <MessageItem message={message} currentUser={currentUser} t={t} />
         </li>

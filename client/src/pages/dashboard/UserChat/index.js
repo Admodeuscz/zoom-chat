@@ -8,14 +8,14 @@ import UserHead from './UserHead'
 
 import { useMutation, useQuery } from '@tanstack/react-query'
 import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
-import { setStoreChat } from '../../../store/useStoreChat'
+import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
 
 const UserChat = () => {
   const ref = useRef()
 
-  const profile = useStoreUser((state) => state.profile)
-
+  const profile = useStoreUser((state) => state?.profile)
+  const messages = useStoreChat((state) => state?.messages)
   const { mutate: sendMessage } = useMutation({
     mutationFn: (data) => chatApi.sendMessage(data)
   })
@@ -35,11 +35,11 @@ const UserChat = () => {
     }
   }, [messagesData])
 
-  const scrollToBottom = useCallback(() => {
+  useEffect(() => {
     if (ref.current?.el) {
       ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
     }
-  }, [])
+  }, [messages])
 
   const handleAddMessage = useCallback(
     (message, toUser) => {
@@ -57,16 +57,9 @@ const UserChat = () => {
         messages: [...prev.messages, messageObj]
       }))
 
-      sendMessage(
-        { content: messageObj.content, receiver_id: messageObj.receiver_id },
-        {
-          onSuccess: scrollToBottom
-        }
-      )
-
-      scrollToBottom()
+      sendMessage({ content: messageObj.content, receiver_id: messageObj.receiver_id })
     },
-    [profile, sendMessage, scrollToBottom]
+    [profile, sendMessage]
   )
 
   return (
@@ -76,7 +69,7 @@ const UserChat = () => {
           <UserHead user={profile} />
 
           <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-5 p-lg-4' id='messages'>
-            <MessageList isLoading={isFetching} currentUser={profile} />
+            <MessageList messages={messages} isLoading={isFetching} currentUser={profile} />
           </SimpleBar>
 
           <ChatInput onaddMessage={handleAddMessage} />

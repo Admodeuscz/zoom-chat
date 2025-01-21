@@ -6,8 +6,8 @@ import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 const ChatInput = ({ onaddMessage }) => {
   const [textMessage, settextMessage] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
-  const { toUser } = useStoreUser()
-  const { members } = useStoreChat()
+  const toUser = useStoreUser((state) => state?.toUser)
+  const members = useStoreChat((state) => state?.members)
   const handleChange = (e) => {
     settextMessage(e.target.value)
   }
@@ -60,7 +60,7 @@ const ChatInput = ({ onaddMessage }) => {
                     </DropdownToggle>
                     <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
                       <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
-                      {members.map((member, key) => (
+                      {members?.map((member, key) => (
                         <DropdownItem key={key} onClick={() => handleChangeToUser(member)}>
                           {member.op_name}
                         </DropdownItem>
