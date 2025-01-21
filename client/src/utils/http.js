@@ -1,6 +1,8 @@
 import axios from 'axios'
-import { URL_LOGIN, URL_LOGOUT, URL_REFRESH_TOKEN } from '../apis/auth.api'
+import { URL_LOGIN, URL_LOGOUT } from '../apis/auth.api'
 import config from '../constants/config'
+import { setStoreChat } from '../store/useStoreChat'
+import { setStoreUser } from '../store/useStoreUser'
 import {
   clearLS,
   getAccessTokenFromLS,
@@ -65,25 +67,36 @@ class Http {
         return response
       },
       (error) => {
+        if (error.response.status === 401) {
+          this.handleRefreshToken()
+        }
         return Promise.reject(error)
       }
     )
   }
   async handleRefreshToken() {
-    try {
-      const res = await this.instance.post(URL_REFRESH_TOKEN, {
-        refresh_token: this.refreshToken
-      })
-      const { access_token } = res.data.data
-      setAccessTokenToLS(access_token)
-      this.accessToken = access_token
-      return access_token
-    } catch (error) {
-      clearLS()
-      this.accessToken = ''
-      this.refreshToken = ''
-      Promise.reject(error)
-    }
+    clearLS()
+    setStoreUser(null)
+    setStoreChat(null)
+    this.accessToken = ''
+    this.refreshToken = ''
+    // try {
+    //   const res = await this.instance.post(URL_REFRESH_TOKEN, {
+    //     refresh_token: this.refreshToken
+    //   })
+    //   const { access_token } = res.data.data
+    //   setAccessTokenToLS(access_token)
+    //   this.accessToken = access_token
+    //   return access_token
+    // } catch (error) {
+    //   clearLS()
+    //   setStoreUser(null)
+    //   setStoreChat(null)
+    //   this.accessToken = ''
+    //   this.refreshToken = ''
+
+    //   Promise.reject(error)
+    // }
   }
 }
 const http = new Http().instance

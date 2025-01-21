@@ -1,10 +1,11 @@
 import React, { useState } from 'react'
-import { Button, Col, Form, Input, Row } from 'reactstrap'
+import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Form, Input, Row } from 'reactstrap'
 import useStoreChat from '../../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 
 const ChatInput = ({ onaddMessage }) => {
   const [textMessage, settextMessage] = useState('')
+  const [dropdownOpen, setDropdownOpen] = useState(false)
   const { toUser } = useStoreUser()
   const { members } = useStoreChat()
   const handleChange = (e) => {
@@ -26,8 +27,9 @@ const ChatInput = ({ onaddMessage }) => {
     }
   }
 
-  const handleChangeToUser = (e) => {
-    const selectedMember = members.find((m) => m.op_id === e.target.value)
+  const toggle = () => setDropdownOpen((prevState) => !prevState)
+
+  const handleChangeToUser = (selectedMember) => {
     setStoreUser({
       toUser: selectedMember || null
     })
@@ -42,22 +44,29 @@ const ChatInput = ({ onaddMessage }) => {
               <div className='position-relative'>
                 <div className='d-flex align-items-center mb-2'>
                   <span className='me-2'>To:</span>
-                  <Input
-                    value={toUser?.op_id || 'all'}
-                    onChange={handleChangeToUser}
-                    type='select'
-                    className='form-select form-select-sm text-truncate'
-                    style={{
-                      width: '120px'
-                    }}
-                  >
-                    <option value='all'>All</option>
-                    {members.map((member, key) => (
-                      <option value={member.op_id} key={key}>
-                        {member.op_name}
-                      </option>
-                    ))}
-                  </Input>
+                  <Dropdown isOpen={dropdownOpen} toggle={toggle} size='sm' direction='up'>
+                    <DropdownToggle
+                      className='text-truncate'
+                      style={{
+                        maxWidth: '200px',
+                        overflow: 'hidden',
+                        backgroundColor: '#0e72ed',
+                        borderRadius: '12px',
+                        padding: '2px 15px',
+                        fontSize: '12px'
+                      }}
+                    >
+                      {toUser?.op_name || 'Everyone'}
+                    </DropdownToggle>
+                    <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                      <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
+                      {members.map((member, key) => (
+                        <DropdownItem key={key} onClick={() => handleChangeToUser(member)}>
+                          {member.op_name}
+                        </DropdownItem>
+                      ))}
+                    </DropdownMenu>
+                  </Dropdown>
                 </div>
                 <Row>
                   <Col>
