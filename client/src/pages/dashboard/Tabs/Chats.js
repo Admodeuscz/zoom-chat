@@ -12,7 +12,7 @@ import { genAvatar } from '../../../utils/utils'
 import OnlineUsers from './OnlineUsers'
 
 const Chats = () => {
-  const members = useStoreChat((state) => state.members)
+  const members = useStoreChat((state) => state?.members)
 
   return (
     <React.Fragment>
@@ -42,7 +42,7 @@ const Chats = () => {
           <h5 className='mb-3 px-3 font-size-16'>ユーザー一覧</h5>
           <SimpleBar className='chat-message-list'>
             <ul className='list-unstyled chat-list chat-user-list px-2' id='chat-list'>
-              {members.map((member, key) => (
+              {members?.map((member, key) => (
                 <li key={key}>
                   <Link>
                     <div className='d-flex align-items-center'>
