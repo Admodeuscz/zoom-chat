@@ -12,7 +12,7 @@ import { genAvatar } from '../../../utils/utils'
 import OnlineUsers from './OnlineUsers'
 
 const Chats = () => {
-  const { members } = useStoreChat()
+  const members = useStoreChat((state) => state.members)
 
   return (
     <React.Fragment>

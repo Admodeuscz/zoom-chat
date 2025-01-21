@@ -4,15 +4,16 @@ import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, NavLink } from 'r
 import { createSelector } from 'reselect'
 import { changeLayoutMode } from '../../../redux/actions'
 
-import { useMutation } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 import authApi from '../../../apis/auth.api'
 import { openUserSidebar, setFullUser } from '../../../redux/actions'
+import { setStoreChat } from '../../../store/useStoreChat'
 import { setStoreUser } from '../../../store/useStoreUser'
 import { clearLS } from '../../../utils/auth'
 
 const UserHead = ({ user }) => {
   const dispatch = useDispatch()
-
+  const navigate = useNavigate()
   const selectLayoutProperties = createSelector(
     (state) => state.Layout,
     (layout) => ({
@@ -38,14 +39,13 @@ const UserHead = ({ user }) => {
     // props.setActiveTab(tab)
   }
 
-  const logoutMutation = useMutation({
-    mutationFn: authApi.logout,
-    onSuccess: () => {
-      setStoreUser({ profile: null, isLogged: false })
-      clearLS()
-      window.location.reload()
-    }
-  })
+  const handleLogout = async () => {
+    await authApi.logout()
+    clearLS()
+    setStoreUser({ profile: null, isLogged: false })
+    setStoreChat({ members: [], active_user: null })
+    navigate('/login')
+  }
 
   return (
     <React.Fragment>
@@ -78,7 +78,7 @@ const UserHead = ({ user }) => {
                   Profile <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem onClick={() => logoutMutation.mutate()}>
+                <DropdownItem onClick={handleLogout}>
                   Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>

@@ -19,24 +19,15 @@ import { changeLayoutMode, setActiveTab } from '../../redux/actions'
 import logo from '../../assets/images/logo-dark.webp'
 import avatar1 from '../../assets/images/users/avatar-1.jpg'
 
-import { useMutation } from '@tanstack/react-query'
 import { createSelector } from 'reselect'
 import authApi from '../../apis/auth.api'
+import { setStoreChat } from '../../store/useStoreChat'
 import { setStoreUser } from '../../store/useStoreUser'
 import { clearLS } from '../../utils/auth'
 
 function LeftSidebarMenu(props) {
   const dispatch = useDispatch()
   const navigate = useNavigate()
-
-  const logoutMutation = useMutation({
-    mutationFn: authApi.logout,
-    onSuccess: () => {
-      setStoreUser({ profile: null, isLogged: false })
-      clearLS()
-      navigate('/login')
-    }
-  })
 
   const selectLayoutProperties = createSelector(
     (state) => state.Layout,
@@ -63,6 +54,14 @@ function LeftSidebarMenu(props) {
 
   const toggleTab = (tab) => {
     props.setActiveTab(tab)
+  }
+
+  const handleLogout = async () => {
+    await authApi.logout()
+    clearLS()
+    setStoreUser({ profile: null, isLogged: false })
+    setStoreChat({ members: [], active_user: null })
+    navigate('/login')
   }
 
   const activeTab = props.activeTab
@@ -135,11 +134,7 @@ function LeftSidebarMenu(props) {
                   Profile <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem
-                  onClick={() => {
-                    logoutMutation.mutate()
-                  }}
-                >
+                <DropdownItem onClick={handleLogout}>
                   Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>
@@ -173,11 +168,7 @@ function LeftSidebarMenu(props) {
                   Profile <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
-                <DropdownItem
-                  onClick={() => {
-                    logoutMutation.mutate()
-                  }}
-                >
+                <DropdownItem onClick={handleLogout}>
                   Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>
