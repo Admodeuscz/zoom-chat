@@ -10,6 +10,7 @@ import { setStoreChat } from '../../store/useStoreChat'
 import useStoreUser from '../../store/useStoreUser'
 const DashboardPage = (props) => {
   const profile = useStoreUser((state) => state?.profile)
+
   useEffect(() => {
     window.Pusher = Pusher
 

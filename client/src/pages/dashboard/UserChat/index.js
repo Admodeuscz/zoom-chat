@@ -30,7 +30,7 @@ const UserChat = () => {
   useEffect(() => {
     if (messagesData) {
       setStoreChat({
-        messages: messagesData?.data?.data || []
+        messages: messagesData?.data?.data?.reverse() || []
       })
     }
   }, [messagesData])

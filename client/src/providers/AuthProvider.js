@@ -9,11 +9,9 @@ export const AuthProvider = ({ children }) => {
     queryFn: authApi.me
   })
   useEffect(() => {
-    setStoreUser({ isLoading: true })
-    if (data?.data) {
-      setStoreUser({ profile: data?.data })
+    if (data?.data?.data) {
+      setStoreUser({ profile: data?.data?.data })
     }
-    setStoreUser({ isLoading: false })
   }, [data])
 
   return <>{children}</>

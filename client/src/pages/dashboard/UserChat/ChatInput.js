@@ -79,12 +79,8 @@ const ChatInput = ({ onaddMessage }) => {
                       placeholder='メッセージを入力...'
                     />
                   </Col>
-                  <Col xs='auto'>
-                    <Button
-                      type='submit'
-                      color='primary'
-                      className='font-size-12 btn-sm chat-send waves-effect waves-light'
-                    >
+                  <Col xs='auto' className='p-0'>
+                    <Button type='submit' color='primary' className='btn-sm chat-send waves-effect waves-light'>
                       <i className='ri-send-plane-fill fs-4'></i>
                     </Button>
                   </Col>

@@ -51,7 +51,7 @@ const MessageList = ({ isLoading, currentUser, messages }) => {
 
   return (
     <ul className='list-unstyled mb-0'>
-      {messages?.reverse()?.map((message, index) => (
+      {messages?.map((message, index) => (
         <li key={index}>
           <MessageItem message={message} currentUser={currentUser} t={t} />
         </li>
