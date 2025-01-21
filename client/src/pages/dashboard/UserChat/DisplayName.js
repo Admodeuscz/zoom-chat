@@ -11,7 +11,7 @@ const userNameStyle = {
 }
 
 const DisplayName = memo(({ message, profile }) => {
-  const isSender = message.sender_id === profile.op_id
+  const isSender = message.sender_id === profile?.op_id
   const teamNameSender = `${Boolean(message.sender?.team?.team_name) ? `(${message.sender?.team?.team_name})` : ''}`
   const teamNameReceiver = `${Boolean(message.receiver?.team?.team_name) ? `(${message.receiver?.team?.team_name})` : ''}`
   const senderName = isSender ? 'You' : `${message.sender?.op_name} ${teamNameSender}` || 'Unknown'
