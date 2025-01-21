@@ -1,26 +1,20 @@
-import React, { useEffect, useRef } from 'react'
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
+import React, { useCallback, useEffect, useRef } from 'react'
 import SimpleBar from 'simplebar-react'
 
+import UserProfileSidebar from '../../../components/UserProfileSidebar'
 import ChatInput from './ChatInput'
+import MessageList from './MessageList'
 import UserHead from './UserHead'
 
-import avatar1 from '../../../assets/images/users/avatar-1.jpg'
-
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useTranslation } from 'react-i18next'
 import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
-import UserProfileSidebar from '../../../components/UserProfileSidebar'
-import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
+import { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
-import DisplayName from './DisplayName'
 
-function UserChat() {
+const UserChat = () => {
   const ref = useRef()
-  const { t } = useTranslation()
 
   const profile = useStoreUser((state) => state.profile)
-  const messages = useStoreChat((state) => state.messages)
 
   const { mutate: sendMessage } = useMutation({
     mutationFn: (data) => chatApi.sendMessage(data)
@@ -41,121 +35,56 @@ function UserChat() {
     }
   }, [messagesData])
 
-  useEffect(() => {
-    if (ref.current) {
-      ref.current.recalculate()
-      if (ref.current.el) {
-        ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
-      }
-    }
-  }, [messages])
-
-  const addMessage = (message, toUser) => {
-    let messageObj = null
-    messageObj = {
-      content: message,
-      receiver_id: toUser?.op_id || null,
-      created_at: new Date().toISOString(),
-      sender_id: profile.op_id,
-      parent_message_id: null,
-      sender: profile
-    }
-    if (!messageObj) return
-    setStoreChat((prev) => ({
-      ...prev,
-      messages: [...prev.messages, messageObj]
-    }))
-
-    console.log(new Date().getTime())
-
-    sendMessage(
-      { content: messageObj.content, receiver_id: messageObj.receiver_id },
-      {
-        onSuccess: () => {
-          scrollToBottom()
-        }
-      }
-    )
-
-    scrollToBottom()
-  }
-
-  const scrollToBottom = () => {
+  const scrollToBottom = useCallback(() => {
     if (ref.current?.el) {
       ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
     }
-  }
+  }, [])
 
-  const deleteMessage = (messageId) => {
-    setStoreChat((prevMessages) => prevMessages.filter((message) => message.message_id !== messageId))
-  }
+  const handleAddMessage = useCallback(
+    (message, toUser) => {
+      const messageObj = {
+        content: message,
+        receiver_id: toUser?.op_id || null,
+        created_at: new Date().toISOString(),
+        sender_id: profile.op_id,
+        parent_message_id: null,
+        sender: profile
+      }
 
-  const renderMessages = () => {
-    if (isFetching) return
-    return messages.map((message, index) => {
-      return (
-        <li key={index}>
-          <div className='conversation-list'>
-            <div className='chat-avatar'>
-              <img src={avatar1} alt='chatting system' />
-            </div>
+      setStoreChat((prev) => ({
+        ...prev,
+        messages: [...prev.messages, messageObj]
+      }))
 
-            <div className='user-chat-content'>
-              <div className='conversation-name'>
-                <div>
-                  <span className='user-name'>
-                    <DisplayName message={message} profile={profile} />
-                  </span>
-                </div>
-                <span className='chat-time mb-0'>
-                  <i className='ri-time-line align-middle'></i>{' '}
-                  <span className='align-middle'>{new Date(message.created_at).toLocaleTimeString()}</span>
-                </span>
-              </div>
-
-              <div className='ctext-wrap'>
-                <div className='ctext-wrap-content'>
-                  <p className='mb-0'>{message.content}</p>
-                </div>
-                <UncontrolledDropdown className='align-self-start ms-1'>
-                  <DropdownToggle tag='a' className='text-muted'>
-                    <i className='ri-more-2-fill'></i>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem>
-                      {t('Copy')} <i className='ri-file-copy-line float-end text-muted'></i>
-                    </DropdownItem>
-                    <DropdownItem onClick={() => deleteMessage(message.message_id)}>
-                      Delete <i className='ri-delete-bin-line float-end text-muted'></i>
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              </div>
-            </div>
-          </div>
-        </li>
+      sendMessage(
+        { content: messageObj.content, receiver_id: messageObj.receiver_id },
+        {
+          onSuccess: scrollToBottom
+        }
       )
-    })
-  }
+
+      scrollToBottom()
+    },
+    [profile, sendMessage, scrollToBottom]
+  )
 
   return (
-    <React.Fragment>
-      <div className='user-chat w-100 overflow-hidden'>
-        <div className='d-lg-flex'>
-          <div className='w-100 overflow-hidden position-relative'>
-            <UserHead user={profile} />
+    <div className='user-chat w-100 overflow-hidden'>
+      <div className='d-lg-flex'>
+        <div className='w-100 overflow-hidden position-relative'>
+          <UserHead user={profile} />
 
-            <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-5 p-lg-4' id='messages'>
-              <ul className='list-unstyled mb-0'>{renderMessages()}</ul>
-            </SimpleBar>
+          <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-5 p-lg-4' id='messages'>
+            <MessageList isLoading={isFetching} currentUser={profile} />
+          </SimpleBar>
 
-            <ChatInput onaddMessage={addMessage} />
-          </div>
-          <UserProfileSidebar user={profile} />
+          <ChatInput onaddMessage={handleAddMessage} />
         </div>
+        <UserProfileSidebar user={profile} />
       </div>
-    </React.Fragment>
+    </div>
   )
 }
 
-export default UserChat
+export default React.memo(UserChat)
