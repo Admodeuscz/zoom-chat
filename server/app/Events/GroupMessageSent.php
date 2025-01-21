@@ -30,6 +30,6 @@ class GroupMessageSent implements ShouldBroadcastNow
 
     public function broadcastWith()
     {
-        return ['message' => $this->message->load('sender', 'receiver', 'parentMessage.sender')];
+        return ['message' => $this->message->load('sender.team', 'receiver.team', 'parentMessage.sender.team')];
     }
 }
