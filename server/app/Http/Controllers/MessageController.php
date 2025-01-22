@@ -9,6 +9,7 @@ use App\Traits\HasApiResponses;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use App\Events\NewMessageEvent;
 use Illuminate\Support\Facades\DB;
 
 class MessageController extends Controller
@@ -19,8 +20,6 @@ class MessageController extends Controller
     {
         $before = $request->input('before');
         $limit = $request->input('limit', 20);
-
-        $cacheKey = "messages:{$before}:{$limit}:" . Auth::id();
 
         $query = Message::with(['sender.team', 'receiver.team'])
             ->where('parent_message_id', null)
@@ -51,7 +50,6 @@ class MessageController extends Controller
         }
 
         return $this->responseApi($messages, true, 200);
-
     }
 
     public function sendMessage(Request $request)
@@ -66,11 +64,15 @@ class MessageController extends Controller
             ]);
 
             if (!empty($data['parent_id'])) {
-                $parentMessage = Message::select('message_id', 'parent_message_id')
+                $parentMessage = Message::select('message_id', 'parent_message_id', 'sender_id', 'receiver_id')
                     ->find($data['parent_id']);
 
-                if ($parentMessage && $parentMessage->parent_message_id) {
-                    $data['parent_id'] = $parentMessage->parent_message_id;
+                $data['parent_id'] = $parentMessage->parent_message_id ?? $data['parent_id'];
+
+                if ($parentMessage->receiver_id) {
+                    $data['receiver_id'] = $parentMessage->sender_id === Auth::id() 
+                        ? $parentMessage->receiver_id 
+                        : $parentMessage->sender_id;
                 }
             }
 
@@ -83,14 +85,9 @@ class MessageController extends Controller
 
             $message->load(['sender.team', 'receiver.team', 'parentMessage.sender.team']);
 
-            if ($message->receiver_id) {
-                broadcast(new UserMessageSent($message))->toOthers();
-            } else {
-                broadcast(new GroupMessageSent($message))->toOthers();
-            }
+            broadcast(new NewMessageEvent($message))->toOthers();
 
             DB::commit();
-
 
             return $this->responseApi([], true, 200);
 
