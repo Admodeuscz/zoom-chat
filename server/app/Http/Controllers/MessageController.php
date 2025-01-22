@@ -13,6 +13,8 @@ use App\Events\NewMessageEvent;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
+use App\Enums\MessageUpdateEnum;
+use App\Events\UpdateMessageEvent;
 
 class MessageController extends Controller
 {
@@ -151,6 +153,8 @@ class MessageController extends Controller
 
         $message->reactions = json_encode($reactions);
         $message->save();
+
+        broadcast(new UpdateMessageEvent($message, MessageUpdateEnum::REACTIONS))->toOthers();
 
         return $this->responseApi([], true, 200);
     }
