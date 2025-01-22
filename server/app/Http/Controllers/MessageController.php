@@ -115,48 +115,61 @@ class MessageController extends Controller
 
     public function updateReactionMessage(Request $request, $messageId)
     {
-        $message = Message::find($messageId);
+        DB::beginTransaction();
 
-        if (!$message) {
-            return $this->responseApi(['error' => 'Message not found'], false, 404);
+        try {
+            $message = Message::find($messageId);
+
+            if (!$message) {
+                return $this->responseApi(['error' => 'Message not found'], false, 404);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'emoji_id' => 'required|string',
+                'icon' => 'required|string',
+            ]);
+
+            if ($validator->fails()) {
+                return $this->responseApi(['error' => $validator->errors()], false, 422);
+            }
+
+            $emojiId = $request->input('emoji_id');
+            $icon = $request->input('icon');
+            
+            $reactions = json_decode($message->reactions, true) ?: [];
+            
+            $index = array_search($emojiId, array_column($reactions, 'emoji_id'));
+            if ($index === false) {
+                $reactions[] = [
+                    'senders' => [],
+                    'emoji_id' => $emojiId,
+                    'icon' => $icon,
+                ];
+                $index = count($reactions) - 1;
+            }
+
+            if (in_array(Auth::id(), $reactions[$index]['senders'])) {
+                $reactions[$index]['senders'] = array_diff($reactions[$index]['senders'], [Auth::id()]);
+            } else {
+                $reactions[$index]['senders'][] = Auth::id();
+            }
+
+            if (count($reactions[$index]['senders']) == 0) {
+                unset($reactions[$index]);
+            }
+
+            $message->reactions = json_encode($reactions);
+            $message->save();
+
+            DB::commit();
+
+            broadcast(new UpdateMessageEvent($message, MessageUpdateEnum::REACTIONS))->toOthers();
+
+            return $this->responseApi([], true, 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $this->responseApi(['error' => $e->getMessage()], false, 500);
         }
-
-        $validator = Validator::make($request->all(), [
-            'reaction_id' => 'required|string',
-        ]);
-
-        if ($validator->fails()) {
-            return $this->responseApi(['error' => $validator->errors()], false, 422);
-        }
-
-        $reactionId = $request->input('reaction_id');
-        $reactions = json_decode($message->reactions, true) ?: [];
-        
-        $index = array_search($reactionId, array_column($reactions, 'icon'));
-        if ($index === false) {
-            $reactions[] = [
-                'senders' => [],
-                'icon' => $reactionId,
-            ];
-            $index = count($reactions) - 1;
-        }
-
-        if (in_array(Auth::id(), $reactions[$index]['senders'])) {
-            $reactions[$index]['senders'] = array_diff($reactions[$index]['senders'], [Auth::id()]);
-        } else {
-            $reactions[$index]['senders'][] = Auth::id();
-        }
-
-        if (count($reactions[$index]['senders']) == 0) {
-            unset($reactions[$index]);
-        }
-
-        $message->reactions = json_encode($reactions);
-        $message->save();
-
-        broadcast(new UpdateMessageEvent($message, MessageUpdateEnum::REACTIONS))->toOthers();
-
-        return $this->responseApi([], true, 200);
     }
 
     function updateContentMessage(Request $request, $messageId) {
