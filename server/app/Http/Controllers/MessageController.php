@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Cache;
 use App\Events\NewMessageEvent;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
 {
@@ -45,7 +46,8 @@ class MessageController extends Controller
             $message->replies = $replies[$message->message_id] ?? collect();
         }
 
-        $previousDayMessage = Message::where('is_deleted', false)
+        $previousDayMessage = Message::select('created_at')
+        ->where('is_deleted', false)
         ->where(function ($query) {
             $query->where('receiver_id', null)
                 ->orWhere('receiver_id', Auth::id())
@@ -68,7 +70,7 @@ class MessageController extends Controller
             DB::beginTransaction();
 
             $data = $request->validate([
-                'content' => 'required|string',
+                'content' => 'required|string|max:5000',
                 'parent_id' => 'nullable|exists:messages,message_id',
                 'receiver_id' => 'nullable|exists:operators,op_id',
             ]);
@@ -77,12 +79,14 @@ class MessageController extends Controller
                 $parentMessage = Message::select('message_id', 'parent_message_id', 'sender_id', 'receiver_id')
                     ->find($data['parent_id']);
 
-                $data['parent_id'] = $parentMessage->parent_message_id ?? $data['parent_id'];
-
-                if ($parentMessage->receiver_id) {
-                    $data['receiver_id'] = $parentMessage->sender_id === Auth::id() 
-                        ? $parentMessage->receiver_id 
-                        : $parentMessage->sender_id;
+                if ($parentMessage) {
+                    $data['parent_id'] = $parentMessage->parent_message_id ?? $data['parent_id'];
+                    
+                    if ($parentMessage->receiver_id) {
+                        $data['receiver_id'] = $parentMessage->sender_id === Auth::id() 
+                            ? $parentMessage->receiver_id 
+                            : $parentMessage->sender_id;
+                    }
                 }
             }
 
@@ -105,6 +109,50 @@ class MessageController extends Controller
             DB::rollBack();
             return $this->responseApi(['error' => $e->getMessage()], false, 500);
         }
+    }
+
+    public function updateReactionMessage(Request $request, $messageId)
+    {
+        $message = Message::find($messageId);
+
+        if (!$message) {
+            return $this->responseApi(['error' => 'Message not found'], false, 404);
+        }
+
+        $validator = Validator::make($request->all(), [
+            'reaction_id' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->responseApi(['error' => $validator->errors()], false, 422);
+        }
+
+        $reactionId = $request->input('reaction_id');
+        $reactions = json_decode($message->reactions, true) ?: [];
+        
+        $index = array_search($reactionId, array_column($reactions, 'icon'));
+        if ($index === false) {
+            $reactions[] = [
+                'senders' => [],
+                'icon' => $reactionId,
+            ];
+            $index = count($reactions) - 1;
+        }
+
+        if (in_array(Auth::id(), $reactions[$index]['senders'])) {
+            $reactions[$index]['senders'] = array_diff($reactions[$index]['senders'], [Auth::id()]);
+        } else {
+            $reactions[$index]['senders'][] = Auth::id();
+        }
+
+        if (count($reactions[$index]['senders']) == 0) {
+            unset($reactions[$index]);
+        }
+
+        $message->reactions = json_encode($reactions);
+        $message->save();
+
+        return $this->responseApi([], true, 200);
     }
 }
 

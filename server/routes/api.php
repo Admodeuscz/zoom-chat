@@ -20,6 +20,7 @@ Route::controller(MessageController::class)
 ->group(function () {
     Route::get('messages', 'getMessages');
     Route::post('messages', 'sendMessage');
+    Route::patch('messages/{messageId}/reactions', 'updateReactionMessage');
 });
 
 Route::controller(OperatorController::class)->group(function () {
