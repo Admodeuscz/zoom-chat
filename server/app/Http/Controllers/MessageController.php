@@ -60,6 +60,14 @@ class MessageController extends Controller
 
         $previousDay = $previousDayMessage ? $previousDayMessage->created_at->toDateString() : null;
 
+        $dateMessage = new Message([
+            'sender_id' => Auth::id(),
+            'content' => $date,
+            'type' => 'date',
+        ]);
+
+        $messages->prepend($dateMessage);
+
         return $this->responseApi([
             'messages' => $messages,
             'previousDay' => $previousDay,
@@ -135,7 +143,7 @@ class MessageController extends Controller
 
             $emojiId = $request->input('emoji_id');
             $icon = $request->input('icon');
-            
+
             $reactions = json_decode($message->reactions, true) ?: [];
             
             $index = array_search($emojiId, array_column($reactions, 'emoji_id'));
