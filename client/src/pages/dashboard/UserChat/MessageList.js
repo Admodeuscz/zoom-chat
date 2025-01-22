@@ -30,43 +30,24 @@ const DateDivider = React.memo(({ date }) => {
   )
 })
 
-const MessageList = ({ isLoading, currentUser, messages }) => {
+const MessageList = ({ isLoading, currentUser, messages = [] }) => {
   const { t } = useTranslation()
-
-  const messageArray = Array.isArray(messages) ? messages : []
-  if (!messageArray.length) return null
-
-  const renderMessages = () => {
-    let currentDate = null
-    const messageElements = []
-
-    messageArray.forEach((message, index) => {
-      const messageDate = new Date(message.created_at).toDateString()
-
-      if (messageDate !== currentDate) {
-        currentDate = messageDate
-        messageElements.push(
-          <li key={`date-${message.created_at}`}>
-            <DateDivider date={message.created_at} />
-          </li>
-        )
-      }
-
-      messageElements.push(
-        <li key={message.message_id}>
-          <MessageItem message={message} currentUser={currentUser} t={t} />
-        </li>
-      )
-    })
-
-    return messageElements
-  }
 
   return (
     <>
       <ul className='list-unstyled mb-0'>
         {isLoading && <Loading />}
-        {renderMessages()}
+        {messages?.map((message) => {
+          return message?.type === 'date' ? (
+            <li key={message.content}>
+              <DateDivider date={message.content} />
+            </li>
+          ) : (
+            <li key={message.message_id}>
+              <MessageItem message={message} currentUser={currentUser} t={t} />
+            </li>
+          )
+        })}
       </ul>
     </>
   )

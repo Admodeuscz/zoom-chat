@@ -1,18 +1,36 @@
 import moment from 'moment'
-import React, { useState } from 'react'
-import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
-import DisplayName from './DisplayName'
-import EmojiPicker from 'emoji-picker-react';
-
+import React, { useCallback, useRef } from 'react'
+import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
 import { genAvatar } from '../../../utils/utils'
+import DisplayName from './DisplayName'
+
+export const showEmojiPickerEvent = new CustomEvent('showEmojiPicker')
+export const hideEmojiPickerEvent = new CustomEvent('hideEmojiPicker')
 
 const MessageItem = React.memo(({ currentUser, message, t }) => {
+  const contentRef = useRef(null)
+  const messageId = message.message_id
+  const reactions = JSON.parse(message?.reactions) || []
+  console.log('🚀 ~ MessageItem ~ reactions:', reactions)
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const handleShowEmoji = useCallback(
+    (e) => {
+      e.stopPropagation()
+      const rect = e.target.getBoundingClientRect()
 
-  const toggle = () => {
-    setDropdownOpen(!dropdownOpen);
-  }
+      const showEvent = new CustomEvent('showEmojiPicker', {
+        detail: {
+          messageId,
+          position: {
+            x: rect.left,
+            y: rect.top - 10
+          }
+        }
+      })
+      document.dispatchEvent(showEvent)
+    },
+    [messageId]
+  )
 
   return (
     <div className='conversation-list'>
@@ -37,28 +55,20 @@ const MessageItem = React.memo(({ currentUser, message, t }) => {
         </div>
 
         <div className='ctext-wrap'>
-          <Dropdown isOpen={dropdownOpen} toggle={toggle}>
-            <DropdownToggle
-              style={{
-                backgroundColor: 'transparent',
-                borderRadius: '12px',
-                padding: '0',
-                fontSize: '12px'
-              }}
-            >
-              <div className='ctext-wrap-content'>
-                <p className='mb-0'>{message.content}</p>
-              </div>
-            </DropdownToggle>
-            <DropdownMenu style={{ padding: 0, border: 'none', backgroundColor: 'transparent', boxShadow: 'none' }}
-            >
-              <DropdownItem toggle={false} style={{ padding: 0, border: 'none', borderRadius: '50px', }}>
-                <EmojiPicker reactionsDefaultOpen={true} searchDisabled={true} skinTonesDisabled={true} onEmojiClick={(emoji) => {
-                  console.log(emoji)
-                }} />
-              </DropdownItem>
-            </DropdownMenu>
-          </Dropdown>
+          <div className='ctext-wrap-content' ref={contentRef}>
+            <p className='mb-0' onClick={handleShowEmoji}>
+              {message.content}
+            </p>
+            <div className='message-reactions'>
+              {reactions?.map((reaction, index) => {
+                return (
+                  <span key={index} className='reaction-item'>
+                    {reaction.icon}
+                  </span>
+                )
+              })}
+            </div>
+          </div>
           <UncontrolledDropdown className='align-self-start ms-1'>
             <DropdownToggle tag='a' className='text-muted'>
               <i className='ri-more-2-fill'></i>
@@ -70,8 +80,6 @@ const MessageItem = React.memo(({ currentUser, message, t }) => {
             </DropdownMenu>
           </UncontrolledDropdown>
         </div>
-
-
       </div>
     </div>
   )

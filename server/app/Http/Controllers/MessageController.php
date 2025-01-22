@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\MessageUpdateEnum;
 use App\Events\GroupMessageSent;
+use App\Events\NewMessageEvent;
+use App\Events\UpdateMessageEvent;
 use App\Events\UserMessageSent;
 use App\Models\Message;
 use App\Traits\HasApiResponses;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use App\Events\NewMessageEvent;
 use Illuminate\Support\Facades\DB;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\Validator;
-use App\Enums\MessageUpdateEnum;
-use App\Events\UpdateMessageEvent;
 
 class MessageController extends Controller
 {
@@ -26,14 +26,14 @@ class MessageController extends Controller
         $date = $requestedDate ? Carbon::parse($requestedDate)->startOfDay() : Carbon::today();
 
         $query = Message::with(['sender.team', 'receiver.team'])
-        ->where('parent_message_id', null)
-        ->where('is_deleted', false)
-        ->whereDate('created_at', $date)
-        ->where(function ($query) {
-            $query->where('receiver_id', null)
-                ->orWhere('receiver_id', Auth::id())
-                ->orWhere('sender_id', Auth::id());
-        });
+            ->where('parent_message_id', null)
+            ->where('is_deleted', false)
+            ->whereDate('created_at', $date)
+            ->where(function ($query) {
+                $query->where('receiver_id', null)
+                    ->orWhere('receiver_id', Auth::id())
+                    ->orWhere('sender_id', Auth::id());
+            });
 
         $messages = $query->get();
 
@@ -49,19 +49,18 @@ class MessageController extends Controller
         }
 
         $previousDayMessage = Message::select('created_at')
-        ->where('is_deleted', false)
-        ->where(function ($query) {
-            $query->where('receiver_id', null)
-                ->orWhere('receiver_id', Auth::id())
-                ->orWhere('sender_id', Auth::id());
-        })
-        ->whereDate('created_at', '<', $date)
-        ->first();
+            ->where('is_deleted', false)
+            ->where(function ($query) {
+                $query->where('receiver_id', null)
+                    ->orWhere('receiver_id', Auth::id())
+                    ->orWhere('sender_id', Auth::id());
+            })
+            ->whereDate('created_at', '<', $date)
+            ->first();
 
         $previousDay = $previousDayMessage ? $previousDayMessage->created_at->toDateString() : null;
 
         $dateMessage = new Message([
-            'sender_id' => Auth::id(),
             'content' => $date,
             'type' => 'date',
         ]);
@@ -91,10 +90,10 @@ class MessageController extends Controller
 
                 if ($parentMessage) {
                     $data['parent_id'] = $parentMessage->parent_message_id ?? $data['parent_id'];
-                    
+
                     if ($parentMessage->receiver_id) {
-                        $data['receiver_id'] = $parentMessage->sender_id === Auth::id() 
-                            ? $parentMessage->receiver_id 
+                        $data['receiver_id'] = $parentMessage->sender_id === Auth::id()
+                            ? $parentMessage->receiver_id
                             : $parentMessage->sender_id;
                     }
                 }
@@ -145,7 +144,7 @@ class MessageController extends Controller
             $icon = $request->input('icon');
 
             $reactions = json_decode($message->reactions, true) ?: [];
-            
+
             $index = array_search($emojiId, array_column($reactions, 'emoji_id'));
             if ($index === false) {
                 $reactions[] = [
@@ -173,14 +172,15 @@ class MessageController extends Controller
 
             broadcast(new UpdateMessageEvent($message, MessageUpdateEnum::REACTIONS))->toOthers();
 
-            return $this->responseApi([], true, 200);
+            return $this->responseApi($message, true, 200);
         } catch (\Exception $e) {
             DB::rollBack();
             return $this->responseApi(['error' => $e->getMessage()], false, 500);
         }
     }
 
-    function updateContentMessage(Request $request, $messageId) {
+    function updateContentMessage(Request $request, $messageId)
+    {
         $validator = Validator::make($request->all(), [
             'content' => 'required|string|max:5000',
         ]);

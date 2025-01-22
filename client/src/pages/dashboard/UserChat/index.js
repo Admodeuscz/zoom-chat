@@ -3,6 +3,7 @@ import SimpleBar from 'simplebar-react'
 
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
 import ChatInput from './ChatInput'
+import EmojiPickerPortal from './EmojiPickerPortal'
 import MessageList from './MessageList'
 import UserHead from './UserHead'
 
@@ -101,7 +102,6 @@ const UserChat = () => {
     }
   }, [messagesData, previousDay, saveScrollPosition, restoreScrollPosition, updateMessages])
 
-  // Scroll Event Listener
   useEffect(() => {
     const scrollElement = ref.current?.getScrollElement()
     if (!scrollElement) return
@@ -110,7 +110,6 @@ const UserChat = () => {
     return () => scrollElement.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
 
-  // Auto Scroll Effect
   useEffect(() => {
     if (isAtBottom && !previousDay) {
       handleScrollBottom(ref)
@@ -152,6 +151,7 @@ const UserChat = () => {
         </div>
         <UserProfileSidebar user={profile} />
       </div>
+      <EmojiPickerPortal />
     </div>
   )
 }

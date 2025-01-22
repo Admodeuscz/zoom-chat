@@ -41,23 +41,32 @@ const DashboardPage = (props) => {
       }
     })
 
-    window.Echo.join('group-chat').listen('NewMessageEvent', (e) => {
-      if (!profile?.op_id || !e?.message) return
+    window.Echo.join('group-chat')
+      .listen('NewMessageEvent', (e) => {
+        if (!profile?.op_id || !e?.message) return
 
-      const isSender = e.message.sender_id === profile?.op_id
-      if (!isSender) {
+        const isSender = e.message.sender_id === profile?.op_id
+        if (!isSender) {
+          setStoreChat((prev) => ({
+            ...prev,
+            messages: [...(prev?.messages || []), e.message]
+          }))
+        }
+      })
+      .listen('UpdateMessageEvent', (e) => {
+        console.log('🚀 ~ DashboardPage ~ e:', e)
+      })
+
+    window.Echo.private(`user-chat.${profile?.op_id}`)
+      .listen('NewMessageEvent', (e) => {
         setStoreChat((prev) => ({
           ...prev,
-          messages: [...(prev?.messages || []), e.message]
+          messages: [...prev.messages, e.message]
         }))
-      }
-    })
-    window.Echo.private(`user-chat.${profile?.op_id}`).listen('NewMessageEvent', (e) => {
-      setStoreChat((prev) => ({
-        ...prev,
-        messages: [...prev.messages, e.message]
-      }))
-    })
+      })
+      .listen('UpdateMessageEvent', (e) => {
+        console.log('🚀 ~ DashboardPage ~ e:', e)
+      })
 
     return () => {
       window.Echo.leaveChannel('group-chat')
