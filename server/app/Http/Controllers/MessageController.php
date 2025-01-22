@@ -158,5 +158,32 @@ class MessageController extends Controller
 
         return $this->responseApi([], true, 200);
     }
+
+    function updateContentMessage(Request $request, $messageId) {
+        $validator = Validator::make($request->all(), [
+            'content' => 'required|string|max:5000',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->responseApi(['error' => $validator->errors()], false, 422);
+        }
+
+        $message = Message::find($messageId);
+
+        if (!$message) {
+            return $this->responseApi(['error' => 'Message not found'], false, 404);
+        }
+
+        if ($message->sender_id !== Auth::id()) {
+            return $this->responseApi(['error' => 'You are not allowed to update this message'], false, 403);
+        }
+
+        $message->content = $request->input('content');
+        $message->save();
+
+        broadcast(new UpdateMessageEvent($message, MessageUpdateEnum::CONTENT))->toOthers();
+
+        return $this->responseApi([], true, 200);
+    }
 }
 
