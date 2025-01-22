@@ -104,6 +104,7 @@ class MessageController extends Controller
                 'content' => $data['content'],
                 'parent_message_id' => $data['parent_id'] ?? null,
                 'receiver_id' => $data['receiver_id'] ?? null,
+                'reactions' => json_encode([]),
             ]);
 
             $message->load(['sender.team', 'receiver.team', 'parentMessage.sender.team']);
@@ -165,7 +166,7 @@ class MessageController extends Controller
                 unset($reactions[$index]);
             }
 
-            $message->reactions = json_encode($reactions);
+            $message->reactions = json_encode(array_values($reactions));
             $message->save();
 
             DB::commit();
@@ -175,7 +176,7 @@ class MessageController extends Controller
             return $this->responseApi($message, true, 200);
         } catch (\Exception $e) {
             DB::rollBack();
-            return $this->responseApi(['error' => $e->getMessage()], false, 500);
+            return $this->responseApi($e->getMessage(), false, 500);
         }
     }
 

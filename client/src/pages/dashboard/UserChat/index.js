@@ -125,7 +125,8 @@ const UserChat = () => {
         created_at: new Date().toISOString(),
         sender_id: profile.op_id,
         parent_message_id: null,
-        sender: profile
+        sender: profile,
+        reactions: JSON.stringify([])
       }
 
       updateMessages([messageObj])
