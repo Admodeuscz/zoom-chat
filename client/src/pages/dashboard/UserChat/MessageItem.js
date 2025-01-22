@@ -1,11 +1,19 @@
 import moment from 'moment'
-import React from 'react'
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
+import React, { useState } from 'react'
+import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
 import DisplayName from './DisplayName'
+import EmojiPicker from 'emoji-picker-react';
 
 import { genAvatar } from '../../../utils/utils'
 
 const MessageItem = React.memo(({ currentUser, message, t }) => {
+
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  const toggle = () => {
+    setDropdownOpen(!dropdownOpen);
+  }
+
   return (
     <div className='conversation-list'>
       <div className='chat-avatar'>
@@ -29,9 +37,28 @@ const MessageItem = React.memo(({ currentUser, message, t }) => {
         </div>
 
         <div className='ctext-wrap'>
-          <div className='ctext-wrap-content'>
-            <p className='mb-0'>{message.content}</p>
-          </div>
+          <Dropdown isOpen={dropdownOpen} toggle={toggle}>
+            <DropdownToggle
+              style={{
+                backgroundColor: 'transparent',
+                borderRadius: '12px',
+                padding: '0',
+                fontSize: '12px'
+              }}
+            >
+              <div className='ctext-wrap-content'>
+                <p className='mb-0'>{message.content}</p>
+              </div>
+            </DropdownToggle>
+            <DropdownMenu style={{ padding: 0, border: 'none', backgroundColor: 'transparent', boxShadow: 'none' }}
+            >
+              <DropdownItem toggle={false} style={{ padding: 0, border: 'none', borderRadius: '50px', }}>
+                <EmojiPicker reactionsDefaultOpen={true} searchDisabled={true} skinTonesDisabled={true} onEmojiClick={(emoji) => {
+                  console.log(emoji)
+                }} />
+              </DropdownItem>
+            </DropdownMenu>
+          </Dropdown>
           <UncontrolledDropdown className='align-self-start ms-1'>
             <DropdownToggle tag='a' className='text-muted'>
               <i className='ri-more-2-fill'></i>
@@ -43,6 +70,8 @@ const MessageItem = React.memo(({ currentUser, message, t }) => {
             </DropdownMenu>
           </UncontrolledDropdown>
         </div>
+
+
       </div>
     </div>
   )
