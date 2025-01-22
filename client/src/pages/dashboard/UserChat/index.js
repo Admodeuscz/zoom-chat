@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import SimpleBar from 'simplebar-react'
 
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
@@ -10,36 +10,112 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
 import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
+import { handleScrollBottom } from '../../../utils/utils'
+
+const SCROLL_THRESHOLD = 50
+const LOAD_MORE_THRESHOLD = 50
 
 const UserChat = () => {
   const ref = useRef()
+  const [isAtBottom, setIsAtBottom] = useState(true)
+  const scrollPositionRef = useRef(null)
 
   const profile = useStoreUser((state) => state?.profile)
   const messages = useStoreChat((state) => state?.messages)
+  const previousDay = useStoreChat((state) => state?.previousDay)
+
   const { mutate: sendMessage } = useMutation({
     mutationFn: (data) => chatApi.sendMessage(data)
   })
 
   const { data: messagesData, isFetching } = useQuery({
-    queryKey: [URL_MESSAGES],
-    queryFn: () => chatApi.getMessages(),
-    gcTime: 0,
-    staleTime: 0
+    queryKey: [URL_MESSAGES, previousDay],
+    queryFn: () => chatApi.getMessages({ date: previousDay })
   })
 
-  useEffect(() => {
-    if (messagesData) {
-      setStoreChat({
-        messages: messagesData?.data?.data?.messages || []
-      })
+  const saveScrollPosition = useCallback(() => {
+    const element = ref.current?.getScrollElement()
+    if (!element) return
+
+    scrollPositionRef.current = {
+      scrollTop: element.scrollTop,
+      scrollHeight: element.scrollHeight
     }
-  }, [messagesData])
+  }, [])
+
+  const restoreScrollPosition = useCallback(() => {
+    const element = ref.current?.getScrollElement()
+    if (!element || !scrollPositionRef.current) return
+
+    requestAnimationFrame(() => {
+      const newHeight = element.scrollHeight
+      const heightDiff = newHeight - scrollPositionRef.current.scrollHeight
+      element.scrollTop = scrollPositionRef.current.scrollTop + heightDiff
+      scrollPositionRef.current = null
+    })
+  }, [])
+
+  const updateMessages = useCallback((newMessages, shouldPrepend = false) => {
+    if (!newMessages) return
+
+    setStoreChat((prev) => ({
+      ...prev,
+      messages: shouldPrepend
+        ? [...(newMessages || []), ...(prev?.messages || [])]
+        : [...(prev?.messages || []), ...(newMessages || [])]
+    }))
+  }, [])
+
+  // Handle Loading More Messages
+  const handleLoadMore = useCallback(() => {
+    if (!messagesData?.data?.data?.previousDay || isFetching) return
+
+    setStoreChat((prev) => ({
+      ...prev,
+      previousDay: messagesData.data.data.previousDay
+    }))
+  }, [messagesData, isFetching])
+
+  const handleScroll = useCallback(() => {
+    const element = ref.current?.getScrollElement()
+    if (!element) return
+
+    const { scrollTop, scrollHeight, clientHeight } = element
+    const isBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < SCROLL_THRESHOLD
+    setIsAtBottom(isBottom)
+
+    if (scrollTop < LOAD_MORE_THRESHOLD) {
+      handleLoadMore()
+    }
+  }, [handleLoadMore])
 
   useEffect(() => {
-    if (ref.current?.el) {
-      ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
+    if (!messagesData) return
+
+    if (previousDay) {
+      saveScrollPosition()
+      updateMessages(messagesData.data.data.messages, true)
+      restoreScrollPosition()
+    } else {
+      updateMessages(messagesData.data.data.messages)
     }
-  }, [messages])
+  }, [messagesData, previousDay, saveScrollPosition, restoreScrollPosition, updateMessages])
+
+  // Scroll Event Listener
+  useEffect(() => {
+    const scrollElement = ref.current?.getScrollElement()
+    if (!scrollElement) return
+
+    scrollElement.addEventListener('scroll', handleScroll)
+    return () => scrollElement.removeEventListener('scroll', handleScroll)
+  }, [handleScroll])
+
+  // Auto Scroll Effect
+  useEffect(() => {
+    if (isAtBottom && !previousDay) {
+      handleScrollBottom(ref)
+    }
+  }, [messages, isAtBottom, previousDay])
 
   const handleAddMessage = useCallback(
     (message, toUser) => {
@@ -53,14 +129,13 @@ const UserChat = () => {
         sender: profile
       }
 
-      setStoreChat((prev) => ({
-        ...prev,
-        messages: [...prev.messages, messageObj]
-      }))
-
-      sendMessage({ content: messageObj.content, receiver_id: messageObj.receiver_id })
+      updateMessages([messageObj])
+      sendMessage({
+        content: messageObj.content,
+        receiver_id: messageObj.receiver_id
+      })
     },
-    [profile, sendMessage]
+    [profile, sendMessage, updateMessages]
   )
 
   return (

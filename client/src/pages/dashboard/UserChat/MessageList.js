@@ -1,62 +1,74 @@
 import React from 'react'
-import { DropdownItem, DropdownMenu, DropdownToggle, UncontrolledDropdown } from 'reactstrap'
 
+import moment from 'moment'
 import { useTranslation } from 'react-i18next'
-import avatar1 from '../../../assets/images/users/avatar-1.jpg'
-import DisplayName from './DisplayName'
+import Loading from '../../../components/Loading'
+import MessageItem from './MessageItem'
 
-const MessageItem = React.memo(({ currentUser, message, t }) => {
+const DateDivider = React.memo(({ date }) => {
+  const { t } = useTranslation()
+  const formatMessageDate = (dateString) => {
+    const messageDate = moment(dateString)
+    const today = moment()
+    const yesterday = moment().subtract(1, 'days')
+
+    if (messageDate.isSame(today, 'day')) {
+      return t('Today')
+    }
+
+    if (messageDate.isSame(yesterday, 'day')) {
+      return t('Yesterday')
+    }
+
+    return messageDate.format('DD/MM/YYYY')
+  }
+
   return (
-    <div className='conversation-list'>
-      <div className='chat-avatar'>
-        <img src={avatar1} alt='chatting system' />
-      </div>
-
-      <div className='user-chat-content'>
-        <div className='conversation-name'>
-          <div>
-            <span className='user-name'>
-              <DisplayName message={message} profile={currentUser} />
-            </span>
-          </div>
-          <span className='chat-time mb-0'>
-            <i className='ri-time-line align-middle'></i>{' '}
-            <span className='align-middle'>{new Date(message.created_at).toLocaleTimeString()}</span>
-          </span>
-        </div>
-
-        <div className='ctext-wrap'>
-          <div className='ctext-wrap-content'>
-            <p className='mb-0'>{message.content}</p>
-          </div>
-          <UncontrolledDropdown className='align-self-start ms-1'>
-            <DropdownToggle tag='a' className='text-muted'>
-              <i className='ri-more-2-fill'></i>
-            </DropdownToggle>
-            <DropdownMenu>
-              <DropdownItem>
-                {t('Copy')} <i className='ri-file-copy-line float-end text-muted'></i>
-              </DropdownItem>
-            </DropdownMenu>
-          </UncontrolledDropdown>
-        </div>
-      </div>
+    <div className='chat-day-title'>
+      <span className='title'>{formatMessageDate(date)}</span>
     </div>
   )
 })
 
 const MessageList = ({ isLoading, currentUser, messages }) => {
   const { t } = useTranslation()
-  if (isLoading || !messages || messages.length === 0) return null
 
-  return (
-    <ul className='list-unstyled mb-0'>
-      {messages?.map((message, index) => (
-        <li key={index}>
+  const messageArray = Array.isArray(messages) ? messages : []
+  if (!messageArray.length) return null
+
+  const renderMessages = () => {
+    let currentDate = null
+    const messageElements = []
+
+    messageArray.forEach((message, index) => {
+      const messageDate = new Date(message.created_at).toDateString()
+
+      if (messageDate !== currentDate) {
+        currentDate = messageDate
+        messageElements.push(
+          <li key={`date-${message.created_at}`}>
+            <DateDivider date={message.created_at} />
+          </li>
+        )
+      }
+
+      messageElements.push(
+        <li key={message.message_id}>
           <MessageItem message={message} currentUser={currentUser} t={t} />
         </li>
-      ))}
-    </ul>
+      )
+    })
+
+    return messageElements
+  }
+
+  return (
+    <>
+      <ul className='list-unstyled mb-0'>
+        {isLoading && <Loading />}
+        {renderMessages()}
+      </ul>
+    </>
   )
 }
 

@@ -1,9 +1,11 @@
 import { create } from 'zustand'
 
 const useStoreChat = create((set) => ({
-  toUser: { id: 'all', name: 'All' },
+  toUser: null,
   members: [],
-  messages: []
+  messages: [],
+  previousDay: null,
+  active_user: null
 }))
 
 export default useStoreChat

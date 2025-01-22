@@ -12,6 +12,7 @@ const userNameStyle = {
 
 const DisplayName = memo(({ message, profile }) => {
   const isSender = message.sender_id === profile?.op_id
+  const isReceiver = message.receiver_id === profile?.op_id
   const teamNameSender = `${Boolean(message.sender?.team?.team_name) ? `(${message.sender?.team?.team_name})` : ''}`
   const teamNameReceiver = `${Boolean(message.receiver?.team?.team_name) ? `(${message.receiver?.team?.team_name})` : ''}`
   const senderName = isSender ? 'You' : `${message.sender?.op_name} ${teamNameSender}` || 'Unknown'
@@ -35,7 +36,7 @@ const DisplayName = memo(({ message, profile }) => {
     <>
       <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
       <span> to </span>
-      <UserNameLink name={receiverName} user={message?.receiver} />
+      {isReceiver ? 'You' : <UserNameLink name={receiverName} user={message?.receiver} />}
       <span> (Direct Message)</span>
     </>
   )

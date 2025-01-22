@@ -19,7 +19,11 @@ export function isAxiosExpiredTokenError(error) {
 
 export function encodeQueryData(data) {
   let ret = []
-  for (let d in data) ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]))
+  for (let d in data) {
+    if (data[d] !== null && data[d] !== undefined) {
+      ret.push(encodeURIComponent(d) + '=' + encodeURIComponent(data[d]))
+    }
+  }
   return ret.join('&')
 }
 
@@ -29,4 +33,10 @@ export function genAvatar(name) {
     return nameParts[0].charAt(0)
   }
   return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`
+}
+
+export const handleScrollBottom = (ref) => {
+  if (ref.current?.el) {
+    ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
+  }
 }
