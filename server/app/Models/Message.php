@@ -20,6 +20,7 @@ class Message extends Model
         'receiver_id',
         'parent_message_id',
         'is_deleted',
+        'reactions',
     ];
 
     public function sender(): BelongsTo
