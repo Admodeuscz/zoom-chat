@@ -41,9 +41,10 @@ const DashboardPage = (props) => {
       }
     })
 
-    window.Echo.channel('group-chat').listen('GroupMessageSent', (e) => {
+    window.Echo.join('group-chat').listen('NewMessageEvent', (e) => {
       if (!profile?.op_id) return
       const isSender = e.message.sender_id === profile?.op_id
+      console.log('🚀 ~ window.Echo.join ~ e:', e)
       if (!isSender) {
         setStoreChat((prev) => ({
           ...prev,
@@ -51,7 +52,7 @@ const DashboardPage = (props) => {
         }))
       }
     })
-    window.Echo.private(`user-chat.${profile?.op_id}`).listen('UserMessageSent', (e) => {
+    window.Echo.private(`user-chat.${profile?.op_id}`).listen('NewMessageEvent', (e) => {
       console.log('🚀 ~ window.Echo.private ~ e:', e)
       setStoreChat((prev) => ({
         ...prev,

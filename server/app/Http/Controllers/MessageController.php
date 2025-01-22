@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use App\Events\NewMessageEvent;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class MessageController extends Controller
 {
@@ -18,25 +19,20 @@ class MessageController extends Controller
 
     function getMessages(Request $request)
     {
-        $before = $request->input('before');
-        $limit = $request->input('limit', 20);
+        $requestedDate = $request->input('date');
+        $date = $requestedDate ? Carbon::parse($requestedDate)->startOfDay() : Carbon::today();
 
         $query = Message::with(['sender.team', 'receiver.team'])
-            ->where('parent_message_id', null)
-            ->where('is_deleted', false)
-            ->where(function ($query) {
-                $query->where('receiver_id', null)
-                    ->orWhere('receiver_id', Auth::id())
-                    ->orWhere('sender_id', Auth::id());
-            });
+        ->where('parent_message_id', null)
+        ->where('is_deleted', false)
+        ->whereDate('created_at', $date)
+        ->where(function ($query) {
+            $query->where('receiver_id', null)
+                ->orWhere('receiver_id', Auth::id())
+                ->orWhere('sender_id', Auth::id());
+        });
 
-        if ($before) {
-            $query->where('message_id', '<', $before);
-        }
-
-        $messages = $query->orderBy('message_id', 'desc')
-            ->limit($limit)
-            ->get();
+        $messages = $query->get();
 
         $messageIds = $messages->pluck('message_id');
         $replies = Message::with(['sender.team', 'receiver.team'])
@@ -49,7 +45,21 @@ class MessageController extends Controller
             $message->replies = $replies[$message->message_id] ?? collect();
         }
 
-        return $this->responseApi($messages, true, 200);
+        $previousDayMessage = Message::where('is_deleted', false)
+        ->where(function ($query) {
+            $query->where('receiver_id', null)
+                ->orWhere('receiver_id', Auth::id())
+                ->orWhere('sender_id', Auth::id());
+        })
+        ->whereDate('created_at', '<', $date)
+        ->first();
+
+        $previousDay = $previousDayMessage ? $previousDayMessage->created_at->toDateString() : null;
+
+        return $this->responseApi([
+            'messages' => $messages,
+            'previousDay' => $previousDay,
+        ], true, 200);
     }
 
     public function sendMessage(Request $request)
