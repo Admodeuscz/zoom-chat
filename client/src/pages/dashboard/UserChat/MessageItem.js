@@ -68,12 +68,24 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
 
   const formattedTime = useMemo(() => moment(message.created_at).format('hh:mm A'), [message.created_at])
 
-  const isSameMessage = () => {
-    if (index) {
-      return messages[index - 1]?.sender_id === message?.sender_id
+  const isSameMessage = useCallback(() => {
+    if (message?.parent_message_id) {
+      const parentMessage = messages.find(msg => msg.message_id === message.parent_message_id);
+      if (!parentMessage?.replies?.length) return false;
+
+      const repliesMap = new Map(
+        parentMessage.replies.map((reply, index) => [reply.message_id, { reply, index }])
+      );
+
+      const currentReply = repliesMap.get(message.message_id);
+      if (!currentReply || currentReply.index === 0) return false;
+
+      const prevReply = parentMessage.replies[currentReply.index - 1];
+      return prevReply.sender_id === message.sender_id;
     }
-    return false
-  }
+
+    return index > 0 && messages[index - 1]?.sender_id === message?.sender_id;
+  }, [message, messages, index]);
 
   return (
     <div
@@ -149,6 +161,8 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
       {
         message.replies?.map((replyMessage) => (
           <MessageItem
+            messages={messages}
+            index={index}
             key={replyMessage.message_id}
             currentUser={currentUser}
             message={replyMessage}
