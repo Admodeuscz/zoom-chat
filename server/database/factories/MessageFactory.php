@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
-use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Operator;
 use App\Models\Message;
+use App\Models\Operator;
+use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Message>
@@ -24,6 +24,7 @@ class MessageFactory extends Factory
             'content' => $this->faker->sentence(),
             'parent_message_id' => $this->faker->boolean(50) ? $this->getParentMessageId() : null,
             'is_deleted' => $this->faker->boolean(5),
+            'reactions' => json_encode([]),
         ];
     }
 
