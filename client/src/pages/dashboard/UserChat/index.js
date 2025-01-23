@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import SimpleBar from 'simplebar-react'
 
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
@@ -12,12 +12,14 @@ import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
 import useSendMessage from '../../../hooks/api/useSendMessage'
 import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
+import { handleScrollBottom } from '../../../utils/utils'
 
 const LOAD_MORE_THRESHOLD = 50
 
 const UserChat = () => {
   const ref = useRef()
   const scrollPositionRef = useRef(null)
+  const [isScrolled, setIsScrolled] = useState(false)
 
   const profile = useStoreUser((state) => state?.profile)
   const messages = useStoreChat((state) => state?.messages)
@@ -101,6 +103,14 @@ const UserChat = () => {
     scrollElement.addEventListener('scroll', handleScroll)
     return () => scrollElement.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
+
+  useEffect(() => {
+    if (isScrolled) return
+    if (messages.length > 0) {
+      handleScrollBottom(ref)
+      setIsScrolled(true)
+    }
+  }, [messages, isScrolled])
 
   const { handleAddMessage } = useSendMessage(ref)
 

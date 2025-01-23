@@ -32,13 +32,13 @@ const DisplayName = memo(({ message, profile }) => {
   )
 
   if (!message.receiver_id || !message.receiver) {
-    return <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
+    return <span>{isSender ? 'You ' : <UserNameLink name={senderName} user={message?.sender} />}</span>
   }
 
   return (
     <>
       <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
-      {isReceiver ? ' to You' : <UserNameLink name={receiverName} user={message?.receiver} isTo={true} />}
+      {isReceiver ? 'to You' : <UserNameLink name={receiverName} user={message?.receiver} isTo={true} />}
       <span> (Direct Message)</span>
     </>
   )

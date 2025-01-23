@@ -52,15 +52,15 @@ export default function useSendMessage(ref = null) {
 
       updateMessages(messageObj)
 
-      if (ref?.current && parent_id) {
-        handleScrollBottom(ref)
-      }
-
       sendMessage({
         content: messageObj.content,
         receiver_id: messageObj.receiver_id,
         parent_id: messageObj.parent_message_id
       })
+
+      if (ref?.current && !parent_id) {
+        handleScrollBottom(ref)
+      }
     },
     [profile, ref, sendMessage, updateMessages]
   )

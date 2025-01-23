@@ -108,21 +108,23 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
         )}
 
         <div className='user-chat-content'>
-          <div className='conversation-name'>
-            <div>
-              <div
-                className='user-name'
-                style={{
-                  gap: '2px'
-                }}
-              >
-                <DisplayName message={message} profile={currentUser} />
+          {!isSameMessage() && (
+            <div className='conversation-name'>
+              <div>
+                <div
+                  className='user-name'
+                  style={{
+                    gap: '2px'
+                  }}
+                >
+                  <DisplayName message={message} profile={currentUser} />
+                </div>
               </div>
+              <span className='chat-time mb-0' style={{ whiteSpace: 'nowrap' }}>
+                <i className='ri-time-line align-middle'></i> {formattedTime}
+              </span>
             </div>
-            <span className='chat-time mb-0' style={{ whiteSpace: 'nowrap' }}>
-              <i className='ri-time-line align-middle'></i> {formattedTime}
-            </span>
-          </div>
+          )}
 
           <div className='ctext-wrap'>
             <div

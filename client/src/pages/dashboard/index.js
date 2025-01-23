@@ -78,13 +78,13 @@ const DashboardPage = (props) => {
       .joining((user) => {
         setStoreChat((prev) => ({
           ...prev,
-          onlineUsers: [...prev.onlineUsers, user]
+          onlineUsers: [...(prev?.onlineUsers || []), user]
         }))
       })
       .leaving((user) => {
         setStoreChat((prev) => ({
           ...prev,
-          onlineUsers: prev.onlineUsers.filter((u) => u.op_id !== user.op_id)
+          onlineUsers: (prev?.onlineUsers || []).filter((u) => u.op_id !== user.op_id)
         }))
       })
       .listen('NewMessageEvent', (e) => {
