@@ -89,7 +89,12 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
         <div className='user-chat-content'>
           <div className='conversation-name'>
             <div>
-              <div className='user-name'>
+              <div
+                className='user-name'
+                style={{
+                  gap: '2px'
+                }}
+              >
                 <DisplayName message={message} profile={currentUser} />
               </div>
             </div>
