@@ -40,7 +40,6 @@ const EmojiPickerPortal = () => {
     const handleClickOutside = (event) => {
       if (portalRef.current && !portalRef.current.contains(event.target)) {
         setIsVisible(false)
-        setActiveMessageId(null)
       }
     }
 
@@ -51,11 +50,10 @@ const EmojiPickerPortal = () => {
       document.removeEventListener('showEmojiPicker', handleShowPicker)
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [])
+  }, [isVisible])
 
   const handleEmojiClick = (emoji) => {
     setIsVisible(false)
-    setActiveMessageId(null)
     setStoreChat((prev) => ({
       ...prev,
       messages: prev.messages.map((message) => {
@@ -69,7 +67,6 @@ const EmojiPickerPortal = () => {
               senders: [profile.op_id]
             })
           } else {
-            // kiểm tra nếu có profile.op_id trong senders thì xóa nó không thì thêm nó
             const hasSender = reactions[reactionIndex].senders.some((sender) => sender === profile.op_id)
             if (hasSender) {
               reactions[reactionIndex].senders = reactions[reactionIndex].senders.filter(
