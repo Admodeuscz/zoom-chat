@@ -129,7 +129,7 @@ class MessageController extends Controller
             $message = Message::find($messageId);
 
             if (!$message) {
-                return $this->responseApi(['error' => 'Message not found'], false, 404);
+                return $this->responseApi(['error' => 'メッセージが見つかりません'], false, 404);
             }
 
             $validator = Validator::make($request->all(), [
@@ -197,11 +197,11 @@ class MessageController extends Controller
         $message = Message::find($messageId);
 
         if (!$message) {
-            return $this->responseApi(['error' => 'Message not found'], false, 404);
+            return $this->responseApi(['error' => 'メッセージが見つかりません'], false, 404);
         }
 
         if ($message->sender_id !== Auth::id()) {
-            return $this->responseApi(['error' => 'You are not allowed to update this message'], false, 403);
+            return $this->responseApi(['error' => 'このメッセージを更新する権限がありません'], false, 403);
         }
 
         $message->content = $request->input('content');
