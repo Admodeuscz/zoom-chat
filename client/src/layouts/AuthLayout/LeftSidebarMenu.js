@@ -21,7 +21,7 @@ import avatar1 from '../../assets/images/users/avatar-1.jpg'
 
 import { createSelector } from 'reselect'
 import { setStoreChat } from '../../store/useStoreChat'
-import { setStoreUser } from '../../store/useStoreUser'
+import useStoreUser, { setStoreUser } from '../../store/useStoreUser'
 import { clearLS } from '../../utils/auth'
 
 function LeftSidebarMenu(props) {
@@ -51,12 +51,15 @@ function LeftSidebarMenu(props) {
   const toggle = () => setDropdownOpen(!dropdownOpen)
   const toggleMobile = () => setDropdownOpenMobile(!dropdownOpenMobile)
 
+  const profile = useStoreUser((state) => state?.profile)
+
   const toggleTab = (tab) => {
     props.setActiveTab(tab)
   }
 
   const handleLogout = async () => {
     clearLS()
+    window.Echo.disconnect()
     setStoreUser({ profile: {}, isLogged: false })
     setStoreChat({ members: [], active_user: null })
     navigate('/login')

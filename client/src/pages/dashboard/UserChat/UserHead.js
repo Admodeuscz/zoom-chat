@@ -7,7 +7,7 @@ import { changeLayoutMode } from '../../../redux/actions'
 import { useNavigate } from 'react-router-dom'
 import { openUserSidebar, setFullUser } from '../../../redux/actions'
 import { setStoreChat } from '../../../store/useStoreChat'
-import { setStoreUser } from '../../../store/useStoreUser'
+import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 import { clearLS } from '../../../utils/auth'
 
 const UserHead = ({ user }) => {
@@ -38,10 +38,14 @@ const UserHead = ({ user }) => {
     // props.setActiveTab(tab)
   }
 
+  const { profile } = useStoreUser((state) => state)
+
   const handleLogout = async () => {
     clearLS()
+    window.Echo.disconnect()
     setStoreUser({ profile: {}, isLogged: false })
     setStoreChat({ members: [], active_user: null })
+
     navigate('/login')
   }
 

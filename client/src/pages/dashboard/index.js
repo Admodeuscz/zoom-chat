@@ -11,6 +11,7 @@ import useStoreUser from '../../store/useStoreUser'
 import http from '../../utils/http'
 const DashboardPage = (props) => {
   const profile = useStoreUser((state) => state?.profile)
+  const isLogged = useStoreUser((state) => state?.isLogged)
 
   const isSender = (message) => {
     return message.sender_id === profile?.op_id
@@ -145,10 +146,10 @@ const DashboardPage = (props) => {
       })
 
     return () => {
-      window.Echo.leaveChannel('group-chat')
-      window.Echo.leaveChannel(`user-chat.${profile?.op_id}`)
+      window.Echo.disconnect()
     }
   }, [profile?.op_id])
+
   return (
     <ChatProvider>
       <ChatLeftSidebar recentChatList={props.users} />

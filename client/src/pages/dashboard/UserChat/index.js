@@ -106,7 +106,7 @@ const UserChat = () => {
 
   useEffect(() => {
     if (isScrolled) return
-    if (messages.length > 0) {
+    if (messages?.length > 0) {
       handleScrollBottom(ref)
       setIsScrolled(true)
     }

@@ -63,9 +63,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
 
   const handleShowReplyBox = useCallback((e) => {
     e.stopPropagation()
-
-    setIsShowRepliesList(true)
-
     setShowReplyBox((prev) => !prev)
   }, [])
 
@@ -81,7 +78,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
       }}
     >
       <div className='conversation-list'>
-
         <div className='chat-avatar'>
           <div className='avatar-xs'>
             <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
@@ -125,18 +121,16 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
                 </div>
               )}
-
-
             </div>
           </div>
         </div>
@@ -148,24 +142,34 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
       </div>
       {message.replies?.length > 0 && (
         <div style={{ marginLeft: '51.2px' }}>
-          <div className='text-primary' onClick={() => setIsShowRepliesList(!isShowRepliesList)} style={{ cursor: 'pointer' }}>
+          <div
+            className='text-primary'
+            onClick={() => {
+              if (isShowRepliesList) {
+                setShowReplyBox(false)
+              }
+              setIsShowRepliesList(!isShowRepliesList)
+            }}
+            style={{ cursor: 'pointer' }}
+          >
             {isShowRepliesList ? '返信を非表示' : 'さらに読み込む'}
           </div>
         </div>
       )}
 
-      {isShowRepliesList && message.replies?.map((replyMessage) => (
-        <>
-          <MessageItem
-            key={replyMessage.message_id}
-            currentUser={currentUser}
-            message={replyMessage}
-            t={t}
-            isReply={true}
-          />
-          <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
-        </>
-      ))}
+      {isShowRepliesList &&
+        message.replies?.map((replyMessage) => (
+          <>
+            <MessageItem
+              key={replyMessage.message_id}
+              currentUser={currentUser}
+              message={replyMessage}
+              t={t}
+              isReply={true}
+            />
+          </>
+        ))}
+      <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
     </div>
   )
 })
