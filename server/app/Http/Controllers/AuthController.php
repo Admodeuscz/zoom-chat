@@ -9,10 +9,21 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Models\Color;
 
 class AuthController extends Controller
 {
     use HasApiResponses;
+
+    private function setColor(Operator $operator) {
+        if ($operator->color_id) {
+            return;
+        }
+
+        $color = Color::select('id')->withCount('operators')->orderBy('operators_count', 'asc')->first();
+        $operator->color_id = $color->id;
+        $operator->save();
+    }
 
     public function register(Request $request)
     {
@@ -60,6 +71,8 @@ class AuthController extends Controller
         if (!$operator || !Hash::check($request->pwd, $operator->pwd)) {
             return $this->responseApi(['message' => 'Unauthorized'], false, 401);
         }
+
+        $this->setColor($operator);
 
         $token = $operator->createToken('auth-token')->plainTextToken;
 

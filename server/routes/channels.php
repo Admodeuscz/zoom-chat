@@ -7,5 +7,5 @@ Broadcast::channel('user-chat.{userId}', function ($user, $userId) {
 });
 
 Broadcast::channel('group-chat', function ($user) {
-    return $user->load('team');
+    return $user->load('team', 'color');
 });

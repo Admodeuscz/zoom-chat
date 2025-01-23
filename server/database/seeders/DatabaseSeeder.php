@@ -6,6 +6,7 @@ use App\Models\Operator;
 use App\Models\Team;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use Database\Seeders\ColorSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -25,6 +26,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             OperatorSeeder::class,
             MessageSeeder::class,
+            ColorSeeder::class,
         ]);
     }
 }

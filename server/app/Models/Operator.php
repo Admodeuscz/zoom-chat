@@ -26,6 +26,7 @@ class Operator extends Authenticatable
         'op_name_kana',
         'pwd',
         'team_id',
+        'color_id',
     ];
 
     protected $hidden = [
@@ -52,8 +53,8 @@ class Operator extends Authenticatable
         return $this->belongsTo(Team::class, 'team_id', 'team_id');
     }
 
-    public function channels(): HasMany
+    public function color(): BelongsTo
     {
-        return $this->hasMany(Channel::class, 'created_by', 'op_id');
+        return $this->belongsTo(Color::class, 'color_id', 'id');
     }
 }

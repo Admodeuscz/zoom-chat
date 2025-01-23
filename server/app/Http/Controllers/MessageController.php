@@ -25,7 +25,7 @@ class MessageController extends Controller
         $requestedDate = $request->input('date');
         $date = $requestedDate ? Carbon::parse($requestedDate)->startOfDay() : Carbon::today();
 
-        $query = Message::with(['sender.team', 'receiver.team'])
+        $query = Message::with(['sender.team', 'sender.color', 'receiver.team', 'receiver.color'])
             ->where('parent_message_id', null)
             ->where('is_deleted', false)
             ->whereDate('created_at', $date)
@@ -38,7 +38,7 @@ class MessageController extends Controller
         $messages = $query->get();
 
         $messageIds = $messages->pluck('message_id');
-        $replies = Message::with(['sender.team', 'receiver.team'])
+        $replies = Message::with(['sender.team', 'sender.color', 'receiver.team', 'receiver.color'])
             ->whereIn('parent_message_id', $messageIds)
             ->where('is_deleted', false)
             ->get()
