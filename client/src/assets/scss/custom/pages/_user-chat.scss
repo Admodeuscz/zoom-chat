@@ -71,7 +71,6 @@
   }
 
   .conversation-list {
-    margin-bottom: 8px;
     display: inline-flex;
     position: relative;
     align-items: flex-end;
@@ -214,6 +213,7 @@
   flex-wrap: wrap;
   gap: 4px;
   margin-top: 4px;
+  margin-right: 20px;
 
   .reaction-item {
     display: inline-flex;

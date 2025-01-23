@@ -12,6 +12,33 @@ import http from '../../utils/http'
 const DashboardPage = (props) => {
   const profile = useStoreUser((state) => state?.profile)
 
+  const isSender = (message) => {
+    return message.sender_id === profile?.op_id
+  }
+
+  const handleUpdateMessage = (message, type) => {
+    if (isSender(message)) return
+
+    setStoreChat((prev) => ({
+      ...prev,
+      messages: prev.messages.map((m) => {
+        if (m.message_id === message.message_id) {
+          if (type === 'REACTIONS') {
+            return {
+              ...m,
+              reactions: message.reactions
+            }
+          }
+          return {
+            ...m,
+            content: message.content
+          }
+        }
+        return m
+      })
+    }))
+  }
+
   useEffect(() => {
     window.Pusher = Pusher
 
@@ -45,8 +72,7 @@ const DashboardPage = (props) => {
       .listen('NewMessageEvent', (e) => {
         if (!profile?.op_id || !e?.message) return
 
-        const isSender = e.message.sender_id === profile?.op_id
-        if (!isSender) {
+        if (!isSender(e.message)) {
           setStoreChat((prev) => ({
             ...prev,
             messages: [...(prev?.messages || []), e.message]
@@ -54,7 +80,7 @@ const DashboardPage = (props) => {
         }
       })
       .listen('UpdateMessageEvent', (e) => {
-        console.log('🚀 ~ DashboardPage ~ e:', e)
+        handleUpdateMessage(e.message, e.type)
       })
 
     window.Echo.private(`user-chat.${profile?.op_id}`)
@@ -65,11 +91,12 @@ const DashboardPage = (props) => {
         }))
       })
       .listen('UpdateMessageEvent', (e) => {
-        console.log('🚀 ~ DashboardPage ~ e:', e)
+        handleUpdateMessage(e.message, e.type)
       })
 
     return () => {
       window.Echo.leaveChannel('group-chat')
+      window.Echo.leaveChannel(`user-chat.${profile?.op_id}`)
     }
   }, [])
   return (

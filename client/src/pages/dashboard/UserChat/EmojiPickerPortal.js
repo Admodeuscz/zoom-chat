@@ -3,7 +3,7 @@ import EmojiPicker from 'emoji-picker-react'
 import React, { useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import chatApi from '../../../apis/chat.api'
-import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
+import { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
 
 const EmojiPickerPortal = () => {
@@ -13,7 +13,6 @@ const EmojiPickerPortal = () => {
   const portalRef = useRef(null)
 
   const profile = useStoreUser((state) => state?.profile)
-  const messages = useStoreChat((state) => state?.messages)
 
   const { mutate: updateEmoji } = useMutation({
     mutationFn: (data) => chatApi.updateEmoji(data)
@@ -55,6 +54,7 @@ const EmojiPickerPortal = () => {
   }, [])
 
   const handleEmojiClick = (emoji) => {
+    console.log(emoji)
     setIsVisible(false)
     setActiveMessageId(null)
     setStoreChat((prev) => ({
@@ -118,8 +118,10 @@ const EmojiPickerPortal = () => {
         searchDisabled={true}
         skinTonesDisabled={true}
         onEmojiClick={handleEmojiClick}
-        emojiStyle='native'
         lazyLoadEmojis={true}
+        allowExpandReactions={false}
+        reactions={['1f44d', '2764-fe0f', '1f603', '1f622', '1f44e', '1f621']}
+        emojiStyle='native'
       />
     </div>,
     portalRef.current
