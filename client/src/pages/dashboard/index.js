@@ -91,10 +91,26 @@ const DashboardPage = (props) => {
         if (!profile?.op_id || !e?.message) return
 
         if (!isSender(e.message)) {
-          setStoreChat((prev) => ({
-            ...prev,
-            messages: [...(prev?.messages || []), e.message]
-          }))
+          setStoreChat((prev) => {
+            if (e.message.parent_message_id) {
+              return {
+                ...prev,
+                messages: prev.messages.map((m) => {
+                  if (m.message_id === e.message.parent_message_id) {
+                    return {
+                      ...m,
+                      replies: [...(m.replies || []), e.message]
+                    }
+                  }
+                  return m
+                })
+              }
+            }
+            return {
+              ...prev,
+              messages: [...(prev?.messages || []), e.message]
+            }
+          })
         }
       })
       .listen('UpdateMessageEvent', (e) => {
@@ -103,10 +119,26 @@ const DashboardPage = (props) => {
 
     window.Echo.private(`user-chat.${profile?.op_id}`)
       .listen('NewMessageEvent', (e) => {
-        setStoreChat((prev) => ({
-          ...prev,
-          messages: [...prev.messages, e.message]
-        }))
+        setStoreChat((prev) => {
+          if (e.message.parent_message_id) {
+            return {
+              ...prev,
+              messages: prev.messages.map((m) => {
+                if (m.message_id === e.message.parent_message_id) {
+                  return {
+                    ...m,
+                    replies: [...(m.replies || []), e.message]
+                  }
+                }
+                return m
+              })
+            }
+          }
+          return {
+            ...prev,
+            messages: [...prev.messages, e.message]
+          }
+        })
       })
       .listen('UpdateMessageEvent', (e) => {
         handleUpdateMessage(e.message, e.type)
@@ -116,7 +148,7 @@ const DashboardPage = (props) => {
       window.Echo.leaveChannel('group-chat')
       window.Echo.leaveChannel(`user-chat.${profile?.op_id}`)
     }
-  }, [])
+  }, [profile?.op_id])
   return (
     <ChatProvider>
       <ChatLeftSidebar recentChatList={props.users} />

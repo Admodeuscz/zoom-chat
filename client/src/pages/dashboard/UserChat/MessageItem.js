@@ -1,12 +1,11 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { genAvatar } from '../../../utils/utils'
 import DisplayName from './DisplayName'
 import ReactionItem from './ReactionItem'
 import ReplyBox from './ReplyBox'
 
-export const showEmojiPickerEvent = new CustomEvent('showEmojiPicker')
-export const hideEmojiPickerEvent = new CustomEvent('hideEmojiPicker')
 const messageReactionsStyle = {
   display: 'flex',
   marginLeft: '52px',
@@ -18,8 +17,9 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
   const reactions = useMemo(() => JSON.parse(message?.reactions) || [], [message?.reactions])
   const [showActions, setShowActions] = useState(false)
   const [showReplyBox, setShowReplyBox] = useState(false)
-  const [replyBoxLeft, setReplyBoxLeft] = useState(0)
   const actionsRef = useRef(null)
+  const profile = useSelector((state) => state.profile)
+  const isSender = useMemo(() => message?.sender_id === profile?.op_id, [message?.sender_id, profile?.op_id])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -63,7 +63,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
   const handleShowReplyBox = useCallback((e) => {
     e.stopPropagation()
 
-    setReplyBoxLeft(e.target.offsetLeft)
     setShowReplyBox((prev) => !prev)
   }, [])
 
@@ -77,38 +76,44 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
   }
 
   return (
-    <div
-      className='d-flex flex-column mb-2'
-      style={{
-        width: 'max-content',
-        marginLeft: isReply ? '51.2px' : '0',
-        maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
-      }}
-    >
-      <div className='conversation-list'>
-        {isSameMessage() ? <div style={{ width: '52px' }} /> : (
-          <div className='chat-avatar'>
-            <div className='avatar-xs'>
-              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
-                {genAvatar(message?.sender?.op_name)}
-              </span>
-            </div>
-          </div>
-        )}
-
-        <div className='user-chat-content'>
-          {!isSameMessage() && (
-            <div className='conversation-name'>
-              <div>
-                <div className='user-name'>
-                  <DisplayName message={message} profile={currentUser} />
-                </div>
+    <div>
+      <div
+        className='d-flex flex-column mb-2'
+        style={{
+          width: 'max-content',
+          marginLeft: isReply ? '51.2px' : '0',
+          maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
+        }}
+      >
+        <div className='conversation-list'>
+          {isSameMessage() ? <div style={{ width: '52px' }} /> : (
+            <div className='chat-avatar'>
+              <div className='avatar-xs'>
+                <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                  {genAvatar(message?.sender?.op_name)}
+                </span>
               </div>
-              <span className='chat-time mb-0'>
-                <i className='ri-time-line align-middle'></i> {formattedTime}
-              </span>
             </div>
           )}
+
+
+          <div className='user-chat-content'>
+            {!isSameMessage() && (
+              <div className='conversation-name'>
+                <div>
+                  <div className='user-name'>
+                    <DisplayName message={message} profile={currentUser} />
+                  </div>
+                </div>
+                <span className='chat-time mb-0'>
+                  <i className='ri-time-line align-middle'></i> {formattedTime}
+                </span>
+              </div>
+            )}
+            <span className='chat-time mb-0' style={{ whiteSpace: 'nowrap' }}>
+              <i className='ri-time-line align-middle'></i> {formattedTime}
+            </span>
+          </div>
 
           <div className='ctext-wrap'>
             <div
@@ -120,18 +125,22 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
 
               {showActions && (
                 <div className='message-actions' ref={actionsRef}>
-                  <div className='message-actions-item' onClick={handleActionClick(handleShowReplyBox)}>
-                    <i className='ri-chat-new-line'></i>
-                  </div>
+                  {!message?.parent_message_id && (
+                    <div className='message-actions-item' onClick={handleActionClick(handleShowReplyBox)}>
+                      <i className='ri-chat-new-line'></i>
+                    </div>
+                  )}
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
                   <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                     <i className='ri-clipboard-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
-                    <i className='ri-edit-box-line'></i>
-                  </div>
+                  {isSender && (
+                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                      <i className='ri-edit-box-line'></i>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
@@ -143,17 +152,19 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
           <ReactionItem key={`${messageId}-${index}`} reaction={reaction} messageId={messageId} index={index} />
         ))}
       </div>
-      {message.replies?.map((replyMessage) => (
-        <MessageItem
-          key={replyMessage.message_id}
-          currentUser={currentUser}
-          message={replyMessage}
-          t={t}
-          isReply={true}
-        />
-      ))}
+      {
+        message.replies?.map((replyMessage) => (
+          <MessageItem
+            key={replyMessage.message_id}
+            currentUser={currentUser}
+            message={replyMessage}
+            t={t}
+            isReply={true}
+          />
+        ))
+      }
       <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
-    </div>
+    </div >
   )
 })
 

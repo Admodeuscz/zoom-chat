@@ -1,26 +1,13 @@
-import React, { useState } from 'react'
-import { Button, Input } from 'reactstrap'
+import React from 'react'
+import useSendMessage from '../../../hooks/api/useSendMessage'
 import useStoreUser from '../../../store/useStoreUser'
 import { genAvatar } from '../../../utils/utils'
+import ChatInput from './ChatInput'
 
 const ReplyBox = ({ messageId, marginLeft, expanded }) => {
   const profile = useStoreUser((state) => state?.profile)
 
-  const [textMessage, setTextMessage] = useState('')
-
-  const handleChange = (e) => {
-    setTextMessage(e.target.value)
-  }
-
-  const handleKeyUp = (e) => {
-    if (e.key === 'Enter') {
-      console.log(textMessage)
-    }
-  }
-
-  const handleSubmit = () => {
-    console.log(textMessage)
-  }
+  const { handleAddMessage } = useSendMessage()
 
   return (
     <div
@@ -32,24 +19,14 @@ const ReplyBox = ({ messageId, marginLeft, expanded }) => {
         overflow: 'hidden'
       }}
     >
-      <div className='chat-avatar'>
+      <div className='chat-avatar m-0'>
         <div className='avatar-xs'>
           <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
             {genAvatar(profile?.op_name)}
           </span>
         </div>
       </div>
-      <Input
-        type='text'
-        value={textMessage}
-        onChange={handleChange}
-        onKeyUp={handleKeyUp}
-        className='form-control form-control-lg bg-light border-light me-2'
-        placeholder='メッセージを入力...'
-      />
-      <Button type='submit' color='primary' className='btn-sm chat-send waves-light' onClick={handleSubmit}>
-        <i className='ri-send-plane-fill fs-4'></i>
-      </Button>
+      <ChatInput onaddMessage={handleAddMessage} isReply={true} parent_id={messageId} />
     </div>
   )
 }
