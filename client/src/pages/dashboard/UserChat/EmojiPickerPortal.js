@@ -54,7 +54,6 @@ const EmojiPickerPortal = () => {
   }, [])
 
   const handleEmojiClick = (emoji) => {
-    console.log(emoji)
     setIsVisible(false)
     setActiveMessageId(null)
     setStoreChat((prev) => ({
@@ -77,7 +76,10 @@ const EmojiPickerPortal = () => {
                 (sender) => sender !== profile.op_id
               )
             } else {
-              reactions[reactionIndex].senders.push(profile.op_id)
+              reactions[reactionIndex].senders.push({
+                op_id: profile.op_id,
+                op_name: profile.op_name
+              })
             }
             if (reactions[reactionIndex].senders.length === 0) {
               reactions.splice(reactionIndex, 1)
@@ -122,6 +124,9 @@ const EmojiPickerPortal = () => {
         allowExpandReactions={false}
         reactions={['1f44d', '2764-fe0f', '1f603', '1f622', '1f44e', '1f621']}
         emojiStyle='native'
+        style={{
+          '--epr-emoji-size': '20px'
+        }}
       />
     </div>,
     portalRef.current
