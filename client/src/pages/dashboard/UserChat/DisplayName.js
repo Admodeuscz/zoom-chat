@@ -22,9 +22,12 @@ const DisplayName = memo(({ message, profile }) => {
     setStoreUser({ toUser: user })
   }
 
-  const UserNameLink = ({ name, user }) => (
-    <span style={userNameStyle} onClick={() => handleUserClick(user)} role='button' tabIndex={0}>
-      {name}
+  const UserNameLink = ({ name, user, isTo }) => (
+    <span>
+      {isTo ? ' to ' : ''}
+      <span style={userNameStyle} onClick={() => handleUserClick(user)} role='button' tabIndex={0}>
+        {name}
+      </span>
     </span>
   )
 
@@ -35,8 +38,7 @@ const DisplayName = memo(({ message, profile }) => {
   return (
     <>
       <span>{isSender ? 'You' : <UserNameLink name={senderName} user={message?.sender} />}</span>
-      <span> to </span>
-      {isReceiver ? 'You' : <UserNameLink name={receiverName} user={message?.receiver} />}
+      {isReceiver ? ' to You' : <UserNameLink name={receiverName} user={message?.receiver} isTo={true} />}
       <span> (Direct Message)</span>
     </>
   )

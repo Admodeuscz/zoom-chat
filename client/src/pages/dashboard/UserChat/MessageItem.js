@@ -9,8 +9,7 @@ export const showEmojiPickerEvent = new CustomEvent('showEmojiPicker')
 export const hideEmojiPickerEvent = new CustomEvent('hideEmojiPicker')
 const messageReactionsStyle = {
   display: 'flex',
-  marginRight: '20px',
-  justifyContent: 'flex-end',
+  marginLeft: '52px',
   gap: '4px'
 }
 
@@ -61,20 +60,24 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
     [messageId]
   )
 
-  const handleShowReplyBox = useCallback(
-    (e) => {
-      e.stopPropagation()
+  const handleShowReplyBox = useCallback((e) => {
+    e.stopPropagation()
 
-      setReplyBoxLeft(e.target.offsetLeft)
-      setShowReplyBox(true)
-    },
-    []
-  )
+    setReplyBoxLeft(e.target.offsetLeft)
+    setShowReplyBox((prev) => !prev)
+  }, [])
 
   const formattedTime = useMemo(() => moment(message.created_at).format('hh:mm A'), [message.created_at])
 
   return (
-    <div className='d-flex flex-column mb-2' style={{ width: 'max-content', marginLeft: isReply ? '51.2px' : '0' }}>
+    <div
+      className='d-flex flex-column mb-2'
+      style={{
+        width: 'max-content',
+        marginLeft: isReply ? '51.2px' : '0',
+        maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
+      }}
+    >
       <div className='conversation-list'>
         <div className='chat-avatar'>
           <div className='avatar-xs'>
@@ -87,9 +90,9 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
         <div className='user-chat-content'>
           <div className='conversation-name'>
             <div>
-              <span className='user-name'>
+              <div className='user-name'>
                 <DisplayName message={message} profile={currentUser} />
-              </span>
+              </div>
             </div>
             <span className='chat-time mb-0'>
               <i className='ri-time-line align-middle'></i> {formattedTime}
@@ -112,10 +115,10 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                     <i className='ri-clipboard-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                     <i className='ri-edit-box-line'></i>
                   </div>
                 </div>
@@ -130,10 +133,15 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
         ))}
       </div>
       {message.replies?.map((replyMessage) => (
-        <MessageItem key={replyMessage.message_id} currentUser={currentUser} message={replyMessage} t={t} isReply={true} />
+        <MessageItem
+          key={replyMessage.message_id}
+          currentUser={currentUser}
+          message={replyMessage}
+          t={t}
+          isReply={true}
+        />
       ))}
-
-      {showReplyBox && <ReplyBox messageId={messageId} marginLeft={'51.2px'} />}
+      <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
     </div>
   )
 })

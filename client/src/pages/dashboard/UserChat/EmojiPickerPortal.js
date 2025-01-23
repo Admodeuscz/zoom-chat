@@ -50,7 +50,7 @@ const EmojiPickerPortal = () => {
       document.removeEventListener('showEmojiPicker', handleShowPicker)
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [isVisible])
+  }, [])
 
   const handleEmojiClick = (emoji) => {
     setIsVisible(false)

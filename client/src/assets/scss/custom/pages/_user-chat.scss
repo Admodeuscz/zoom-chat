@@ -87,13 +87,17 @@
       position: relative;
       font-size: 14px;
     }
+    .user-name {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+    }
 
     .conversation-name {
       font-weight: $font-weight-medium;
       font-size: 14px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
     }
 
     .dropdown {
