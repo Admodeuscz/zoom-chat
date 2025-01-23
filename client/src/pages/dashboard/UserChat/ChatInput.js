@@ -7,7 +7,6 @@ const ChatInput = ({ onaddMessage }) => {
   const [textMessage, settextMessage] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toUser = useStoreUser((state) => state?.toUser)
-  const members = useStoreChat((state) => state?.members)
   const handleChange = (e) => {
     settextMessage(e.target.value)
   }
@@ -35,6 +34,8 @@ const ChatInput = ({ onaddMessage }) => {
     })
   }
 
+  const onlineUsers = useStoreChat((state) => state?.onlineUsers) ?? []
+
   return (
     <React.Fragment>
       <div className='chat-input-section p-2 p-lg-3 border-top mb-0'>
@@ -60,9 +61,9 @@ const ChatInput = ({ onaddMessage }) => {
                     </DropdownToggle>
                     <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
                       <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
-                      {members?.map((member, key) => (
-                        <DropdownItem key={key} onClick={() => handleChangeToUser(member)}>
-                          {member.op_name}
+                      {onlineUsers?.map((onlineUser) => (
+                        <DropdownItem key={onlineUser.op_id} onClick={() => handleChangeToUser(onlineUser)}>
+                          {onlineUser.op_name}
                         </DropdownItem>
                       ))}
                     </DropdownMenu>

@@ -70,10 +70,21 @@ const DashboardPage = (props) => {
 
     window.Echo.join('group-chat')
       .here((users) => {
-        console.log('users', users)
         setStoreChat((prev) => ({
           ...prev,
-          onlineUsers: users ?? []
+          onlineUsers: users ? users.filter((user) => user.op_id !== profile?.op_id) : []
+        }))
+      })
+      .joining((user) => {
+        setStoreChat((prev) => ({
+          ...prev,
+          onlineUsers: [...prev.onlineUsers, user]
+        }))
+      })
+      .leaving((user) => {
+        setStoreChat((prev) => ({
+          ...prev,
+          onlineUsers: prev.onlineUsers.filter((u) => u.op_id !== user.op_id)
         }))
       })
       .listen('NewMessageEvent', (e) => {
