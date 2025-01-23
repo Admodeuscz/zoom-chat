@@ -92,6 +92,8 @@ const EmojiPickerPortal = () => {
       })
     }))
 
+    console.log(activeMessageId)
+
     updateEmoji({
       messageId: activeMessageId,
       emoji: {

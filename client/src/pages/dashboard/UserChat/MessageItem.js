@@ -121,7 +121,12 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                  <div
+                    className='message-actions-item'
+                    onClick={handleActionClick(() => {
+                      navigator.clipboard.writeText(message.content)
+                    })}
+                  >
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
@@ -150,9 +155,10 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
               }
               setIsShowRepliesList(!isShowRepliesList)
             }}
-            style={{ cursor: 'pointer' }}
+            style={{ cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
           >
             {isShowRepliesList ? '返信を非表示' : 'さらに読み込む'}
+            {!isShowRepliesList ? <i className='ri-arrow-down-s-line'></i> : <i className='ri-arrow-up-s-line'></i>}
           </div>
         </div>
       )}
