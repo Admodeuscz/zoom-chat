@@ -3,7 +3,7 @@ import { Button, Col, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Form
 import useStoreChat from '../../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 
-const ChatInput = ({ onaddMessage }) => {
+const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
   const [textMessage, settextMessage] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toUser = useStoreUser((state) => state?.toUser)
@@ -14,7 +14,7 @@ const ChatInput = ({ onaddMessage }) => {
   const handleSubmit = (e, { textMessage, toUser }) => {
     e.preventDefault()
     if (textMessage !== '') {
-      onaddMessage(textMessage, toUser)
+      onaddMessage(textMessage, toUser, parent_id)
       settextMessage('')
     }
   }
@@ -38,37 +38,39 @@ const ChatInput = ({ onaddMessage }) => {
 
   return (
     <React.Fragment>
-      <div className='chat-input-section p-2 p-lg-3 border-top mb-0'>
+      <div className={`chat-input-section p-2 ${!isReply ? 'p-lg-3' : ''} mb-0 ${!isReply ? 'border-top' : ''}`}>
         <Form onSubmit={(e) => handleSubmit(e, { textMessage, toUser })}>
           <Row className='g-0'>
             <Col>
               <div className='position-relative'>
-                <div className='d-flex align-items-center mb-2'>
-                  <span className='me-2'>To:</span>
-                  <Dropdown isOpen={dropdownOpen} toggle={toggle} size='sm' direction='up'>
-                    <DropdownToggle
-                      className='text-truncate'
-                      style={{
-                        maxWidth: '200px',
-                        overflow: 'hidden',
-                        backgroundColor: '#0e72ed',
-                        borderRadius: '12px',
-                        padding: '2px 15px',
-                        fontSize: '12px'
-                      }}
-                    >
-                      {toUser?.op_name || 'Everyone'}
-                    </DropdownToggle>
-                    <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                      <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
-                      {onlineUsers?.map((onlineUser) => (
-                        <DropdownItem key={onlineUser.op_id} onClick={() => handleChangeToUser(onlineUser)}>
-                          {onlineUser.op_name}
-                        </DropdownItem>
-                      ))}
-                    </DropdownMenu>
-                  </Dropdown>
-                </div>
+                {!isReply && (
+                  <div className='d-flex align-items-center mb-2'>
+                    <span className='me-2'>To:</span>
+                    <Dropdown isOpen={dropdownOpen} toggle={toggle} size='sm' direction='up'>
+                      <DropdownToggle
+                        className='text-truncate'
+                        style={{
+                          maxWidth: '200px',
+                          overflow: 'hidden',
+                          backgroundColor: '#0e72ed',
+                          borderRadius: '12px',
+                          padding: '2px 15px',
+                          fontSize: '12px'
+                        }}
+                      >
+                        {toUser?.op_name || 'Everyone'}
+                      </DropdownToggle>
+                      <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
+                        <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
+                        {onlineUsers?.map((onlineUser) => (
+                          <DropdownItem key={onlineUser.op_id} onClick={() => handleChangeToUser(onlineUser)}>
+                            {onlineUser.op_name}
+                          </DropdownItem>
+                        ))}
+                      </DropdownMenu>
+                    </Dropdown>
+                  </div>
+                )}
                 <Row>
                   <Col>
                     <Input

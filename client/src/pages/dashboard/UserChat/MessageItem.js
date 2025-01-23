@@ -5,8 +5,6 @@ import DisplayName from './DisplayName'
 import ReactionItem from './ReactionItem'
 import ReplyBox from './ReplyBox'
 
-export const showEmojiPickerEvent = new CustomEvent('showEmojiPicker')
-export const hideEmojiPickerEvent = new CustomEvent('hideEmojiPicker')
 const messageReactionsStyle = {
   display: 'flex',
   marginLeft: '52px',
@@ -18,7 +16,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
   const reactions = useMemo(() => JSON.parse(message?.reactions) || [], [message?.reactions])
   const [showActions, setShowActions] = useState(false)
   const [showReplyBox, setShowReplyBox] = useState(false)
-  const [replyBoxLeft, setReplyBoxLeft] = useState(0)
   const actionsRef = useRef(null)
 
   useEffect(() => {
@@ -63,7 +60,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
   const handleShowReplyBox = useCallback((e) => {
     e.stopPropagation()
 
-    setReplyBoxLeft(e.target.offsetLeft)
     setShowReplyBox((prev) => !prev)
   }, [])
 
@@ -94,7 +90,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                 <DisplayName message={message} profile={currentUser} />
               </div>
             </div>
-            <span className='chat-time mb-0'>
+            <span className='chat-time mb-0' style={{ whiteSpace: 'nowrap' }}>
               <i className='ri-time-line align-middle'></i> {formattedTime}
             </span>
           </div>

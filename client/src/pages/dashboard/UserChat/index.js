@@ -7,8 +7,9 @@ import EmojiPickerPortal from './EmojiPickerPortal'
 import MessageList from './MessageList'
 import UserHead from './UserHead'
 
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
+import useSendMessage from '../../../hooks/api/useSendMessage'
 import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
 import { handleScrollBottom } from '../../../utils/utils'
@@ -24,10 +25,6 @@ const UserChat = () => {
   const profile = useStoreUser((state) => state?.profile)
   const messages = useStoreChat((state) => state?.messages)
   const previousDay = useStoreChat((state) => state?.previousDay)
-
-  const { mutate: sendMessage } = useMutation({
-    mutationFn: (data) => chatApi.sendMessage(data)
-  })
 
   const { data: messagesData, isFetching } = useQuery({
     queryKey: [URL_MESSAGES, previousDay],
@@ -116,27 +113,7 @@ const UserChat = () => {
     }
   }, [messages, isAtBottom, previousDay])
 
-  const handleAddMessage = useCallback(
-    (message, toUser) => {
-      const messageObj = {
-        content: message,
-        receiver_id: toUser?.op_id || null,
-        receiver: toUser || null,
-        created_at: new Date().toISOString(),
-        sender_id: profile.op_id,
-        parent_message_id: null,
-        sender: profile,
-        reactions: JSON.stringify([])
-      }
-
-      updateMessages([messageObj])
-      sendMessage({
-        content: messageObj.content,
-        receiver_id: messageObj.receiver_id
-      })
-    },
-    [profile, sendMessage, updateMessages]
-  )
+  const { handleAddMessage } = useSendMessage(ref)
 
   return (
     <div className='user-chat w-100 overflow-hidden'>
