@@ -104,13 +104,16 @@ const EmojiPickerPortal = () => {
     })
   }
 
-  if (!isVisible || !portalRef.current) return null
+  if (!portalRef.current) return null
 
   const style = {
     position: 'fixed',
     left: `${position.x}px`,
     top: `${position.y}px`,
-    zIndex: 9999
+    zIndex: 9999,
+    visibility: isVisible ? 'visible' : 'hidden',
+    opacity: isVisible ? 1 : 0,
+    transition: 'visibility 0s, opacity 0.2s linear'
   }
 
   return createPortal(

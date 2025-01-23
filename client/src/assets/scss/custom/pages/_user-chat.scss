@@ -229,3 +229,35 @@
     }
   }
 }
+
+.message-actions {
+  display: flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 5px;
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  border-radius: 8px;
+  background-color: $white;
+  box-shadow: 0 8px 24px #2323331a;
+  border: 1px solid rgba(35, 35, 51, 0.2);
+  z-index: 9999;
+
+  &-item {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+    font-size: 16px;
+    color: #0404138f;
+    padding: 0 4px;
+
+    &:hover {
+      background-color: rgba(var(--#{$prefix}primary-rgb), 0.1);
+    }
+  }
+}
