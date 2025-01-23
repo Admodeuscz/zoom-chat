@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef } from 'react'
 import SimpleBar from 'simplebar-react'
 
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
@@ -12,14 +12,11 @@ import chatApi, { URL_MESSAGES } from '../../../apis/chat.api'
 import useSendMessage from '../../../hooks/api/useSendMessage'
 import useStoreChat, { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser from '../../../store/useStoreUser'
-import { handleScrollBottom } from '../../../utils/utils'
 
-const SCROLL_THRESHOLD = 50
 const LOAD_MORE_THRESHOLD = 50
 
 const UserChat = () => {
   const ref = useRef()
-  const [isAtBottom, setIsAtBottom] = useState(true)
   const scrollPositionRef = useRef(null)
 
   const profile = useStoreUser((state) => state?.profile)
@@ -78,9 +75,7 @@ const UserChat = () => {
     const element = ref.current?.getScrollElement()
     if (!element) return
 
-    const { scrollTop, scrollHeight, clientHeight } = element
-    const isBottom = Math.abs(scrollHeight - clientHeight - scrollTop) < SCROLL_THRESHOLD
-    setIsAtBottom(isBottom)
+    const { scrollTop } = element
 
     if (scrollTop < LOAD_MORE_THRESHOLD) {
       handleLoadMore()
@@ -106,12 +101,6 @@ const UserChat = () => {
     scrollElement.addEventListener('scroll', handleScroll)
     return () => scrollElement.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
-
-  useEffect(() => {
-    if (isAtBottom && !previousDay) {
-      handleScrollBottom(ref)
-    }
-  }, [messages, isAtBottom, previousDay])
 
   const { handleAddMessage } = useSendMessage(ref)
 
