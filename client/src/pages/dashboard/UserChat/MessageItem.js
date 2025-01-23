@@ -76,44 +76,38 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
   }
 
   return (
-    <div>
-      <div
-        className='d-flex flex-column mb-2'
-        style={{
-          width: 'max-content',
-          marginLeft: isReply ? '51.2px' : '0',
-          maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
-        }}
-      >
-        <div className='conversation-list'>
-          {isSameMessage() ? <div style={{ width: '52px' }} /> : (
-            <div className='chat-avatar'>
-              <div className='avatar-xs'>
-                <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
-                  {genAvatar(message?.sender?.op_name)}
-                </span>
+    <div
+      className='d-flex flex-column mb-2'
+      style={{
+        width: 'max-content',
+        marginLeft: isReply ? '51.2px' : '0',
+        maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
+      }}
+    >
+      <div className='conversation-list'>
+        {isSameMessage() ? <div style={{ width: '52px' }} /> : (
+          <div className='chat-avatar'>
+            <div className='avatar-xs'>
+              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                {genAvatar(message?.sender?.op_name)}
+              </span>
+            </div>
+          </div>
+        )}
+
+        <div className='user-chat-content'>
+          {!isSameMessage() && (
+            <div className='conversation-name'>
+              <div>
+                <div className='user-name'>
+                  <DisplayName message={message} profile={currentUser} />
+                </div>
               </div>
+              <span className='chat-time mb-0'>
+                <i className='ri-time-line align-middle'></i> {formattedTime}
+              </span>
             </div>
           )}
-
-
-          <div className='user-chat-content'>
-            {!isSameMessage() && (
-              <div className='conversation-name'>
-                <div>
-                  <div className='user-name'>
-                    <DisplayName message={message} profile={currentUser} />
-                  </div>
-                </div>
-                <span className='chat-time mb-0'>
-                  <i className='ri-time-line align-middle'></i> {formattedTime}
-                </span>
-              </div>
-            )}
-            <span className='chat-time mb-0' style={{ whiteSpace: 'nowrap' }}>
-              <i className='ri-time-line align-middle'></i> {formattedTime}
-            </span>
-          </div>
 
           <div className='ctext-wrap'>
             <div
@@ -141,12 +135,12 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
-                </div>
+                </div >
               )}
-            </div>
-          </div>
-        </div>
-      </div>
+            </div >
+          </div >
+        </div >
+      </div >
       <div className='message-reactions' style={messageReactionsStyle}>
         {reactions?.map((reaction, index) => (
           <ReactionItem key={`${messageId}-${index}`} reaction={reaction} messageId={messageId} index={index} />
