@@ -69,6 +69,13 @@ const DashboardPage = (props) => {
     })
 
     window.Echo.join('group-chat')
+      .here((users) => {
+        console.log('users', users)
+        setStoreChat((prev) => ({
+          ...prev,
+          onlineUsers: users ?? []
+        }))
+      })
       .listen('NewMessageEvent', (e) => {
         if (!profile?.op_id || !e?.message) return
 

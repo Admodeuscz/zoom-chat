@@ -156,10 +156,14 @@ class MessageController extends Controller
                 $index = count($reactions) - 1;
             }
 
-            if (in_array(Auth::id(), $reactions[$index]['senders'])) {
-                $reactions[$index]['senders'] = array_diff($reactions[$index]['senders'], [Auth::id()]);
+            $opIdIndex = array_search(Auth::id(), array_column($reactions[$index]['senders'], 'op_id'));
+            if ($opIdIndex !== false) {
+                unset($reactions[$index]['senders'][$opIdIndex]);
             } else {
-                $reactions[$index]['senders'][] = Auth::id();
+                $reactions[$index]['senders'][] = [
+                    'op_id' => Auth::id(),
+                    'op_name' => Auth::user()->op_name,
+                ];
             }
 
             if (count($reactions[$index]['senders']) == 0) {

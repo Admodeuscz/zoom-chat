@@ -5,6 +5,7 @@ const useStoreChat = create((set) => ({
   members: [],
   messages: [],
   previousDay: null,
+  onlineUsers: [],
   active_user: null
 }))
 
