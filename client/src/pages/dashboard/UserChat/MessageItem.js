@@ -13,7 +13,7 @@ const messageReactionsStyle = {
   gap: '4px'
 }
 
-const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) => {
+const MessageItem = React.memo(({ currentUser, message, t, isReply = false, index, messages }) => {
   const messageId = message.message_id
   const reactions = useMemo(() => JSON.parse(message?.reactions) || [], [message?.reactions])
   const [showActions, setShowActions] = useState(false)
@@ -69,6 +69,13 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
 
   const formattedTime = useMemo(() => moment(message.created_at).format('hh:mm A'), [message.created_at])
 
+  const isSameMessage = () => {
+    if (index) {
+      return messages[index - 1]?.sender_id === message?.sender_id
+    }
+    return false
+  }
+
   return (
     <div
       className='d-flex flex-column mb-2'
@@ -79,25 +86,29 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
       }}
     >
       <div className='conversation-list'>
-        <div className='chat-avatar'>
-          <div className='avatar-xs'>
-            <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
-              {genAvatar(message?.sender?.op_name)}
-            </span>
+        {isSameMessage() ? <div style={{ width: '52px' }} /> : (
+          <div className='chat-avatar'>
+            <div className='avatar-xs'>
+              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                {genAvatar(message?.sender?.op_name)}
+              </span>
+            </div>
           </div>
-        </div>
+        )}
 
         <div className='user-chat-content'>
-          <div className='conversation-name'>
-            <div>
-              <div className='user-name'>
-                <DisplayName message={message} profile={currentUser} />
+          {!isSameMessage() && (
+            <div className='conversation-name'>
+              <div>
+                <div className='user-name'>
+                  <DisplayName message={message} profile={currentUser} />
+                </div>
               </div>
+              <span className='chat-time mb-0'>
+                <i className='ri-time-line align-middle'></i> {formattedTime}
+              </span>
             </div>
-            <span className='chat-time mb-0'>
-              <i className='ri-time-line align-middle'></i> {formattedTime}
-            </span>
-          </div>
+          )}
 
           <div className='ctext-wrap'>
             <div
@@ -115,10 +126,10 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                     <i className='ri-clipboard-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                  <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                     <i className='ri-edit-box-line'></i>
                   </div>
                 </div>
