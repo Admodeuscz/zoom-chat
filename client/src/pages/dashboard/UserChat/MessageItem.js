@@ -1,5 +1,6 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useSelector } from 'react-redux'
 import { genAvatar } from '../../../utils/utils'
 import DisplayName from './DisplayName'
 import ReactionItem from './ReactionItem'
@@ -17,6 +18,8 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
   const [showActions, setShowActions] = useState(false)
   const [showReplyBox, setShowReplyBox] = useState(false)
   const actionsRef = useRef(null)
+  const profile = useSelector((state) => state.profile)
+  const isSender = useMemo(() => message?.sender_id === profile?.op_id, [message?.sender_id, profile?.op_id])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -105,18 +108,22 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
 
               {showActions && (
                 <div className='message-actions' ref={actionsRef}>
-                  <div className='message-actions-item' onClick={handleActionClick(handleShowReplyBox)}>
-                    <i className='ri-chat-new-line'></i>
-                  </div>
+                  {!message?.parent_message_id && (
+                    <div className='message-actions-item' onClick={handleActionClick(handleShowReplyBox)}>
+                      <i className='ri-chat-new-line'></i>
+                    </div>
+                  )}
                   <div className='message-actions-item' onClick={handleActionClick(handleShowEmoji)}>
                     <i className='ri-emotion-happy-line'></i>
                   </div>
                   <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                     <i className='ri-clipboard-line'></i>
                   </div>
-                  <div className='message-actions-item' onClick={handleActionClick(() => {})}>
-                    <i className='ri-edit-box-line'></i>
-                  </div>
+                  {isSender && (
+                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                      <i className='ri-edit-box-line'></i>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
