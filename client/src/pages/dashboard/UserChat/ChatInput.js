@@ -75,7 +75,7 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
                     </Dropdown>
                   </div>
                 )}
-                <Row>
+                <Row className='me-0'>
                   <Col>
                     <Input
                       type='text'

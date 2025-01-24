@@ -7,7 +7,7 @@ import CustomCollapse from '../../../components/CustomCollapse'
 //i18n
 import { useTranslation } from 'react-i18next'
 import useStoreUser from '../../../store/useStoreUser'
-import { genAvatar } from '../../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../../utils/utils'
 
 function Profile(props) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -45,7 +45,7 @@ function Profile(props) {
         <div className='text-center p-4 border-bottom'>
           <div className='mb-4'>
             <div className='avatar-lg mx-auto'>
-              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+              <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(profile) }}>
                 {genAvatar(profile?.op_name)}
               </span>
             </div>

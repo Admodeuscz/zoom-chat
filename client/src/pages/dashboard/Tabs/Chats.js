@@ -9,7 +9,7 @@ import SimpleBar from 'simplebar-react'
 //components
 import { Input, InputGroup } from 'reactstrap'
 import useStoreChat from '../../../store/useStoreChat'
-import { genAvatar } from '../../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../../utils/utils'
 import OnlineUsers from './OnlineUsers'
 
 const Chats = () => {
@@ -64,7 +64,7 @@ const Chats = () => {
                     <div className='d-flex align-items-center'>
                       <div className={'chat-user-img ' + member.status + ' align-self-center ms-0'}>
                         <div className='avatar-xs'>
-                          <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                          <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(member) }}>
                             {genAvatar(member.op_name)}
                           </span>
                         </div>

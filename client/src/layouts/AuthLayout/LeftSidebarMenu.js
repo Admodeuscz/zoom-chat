@@ -22,7 +22,7 @@ import { createSelector } from 'reselect'
 import { setStoreChat } from '../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../store/useStoreUser'
 import { clearLS } from '../../utils/auth'
-import { genAvatar } from '../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../utils/utils'
 
 function LeftSidebarMenu(props) {
   const dispatch = useDispatch()
@@ -160,8 +160,8 @@ function LeftSidebarMenu(props) {
               <DropdownToggle className='nav-link mb-2' tag='a'>
                 <div className='avatar-xs mx-auto d-block chat-user-img online'>
                   <span
-                    className='avatar-title rounded-circle bg-primary-subtle text-primary'
-                    style={{ fontSize: '1rem' }}
+                    className='avatar-title rounded-circle'
+                    style={{ fontSize: '1rem', backgroundColor: getOperatorColor(profile) }}
                   >
                     {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
                   </span>

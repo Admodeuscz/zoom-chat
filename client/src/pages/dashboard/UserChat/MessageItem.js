@@ -88,7 +88,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
         ) : (
           <div className='chat-avatar'>
             <div className='avatar-xs'>
-              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+              <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(message?.sender) }}>
                 {genAvatar(message?.sender?.op_name)}
               </span>
             </div>
@@ -144,7 +144,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
