@@ -87,7 +87,6 @@ const UserChat = () => {
     if (!messagesData?.data?.data?.messages) return
 
     const newMessages = messagesData.data.data.messages
-    const newPreviousDay = messagesData.data.data.previousDay
 
     if (previousDay) {
       saveScrollPosition()
@@ -95,14 +94,7 @@ const UserChat = () => {
       restoreScrollPosition()
     } else {
       updateMessages(newMessages)
-      if (newPreviousDay && !isScrolled) {
-        setStoreChat((prev) => ({
-          ...prev,
-          previousDay: newPreviousDay
-        }))
-      }
     }
-
   }, [messagesData])
 
   useEffect(() => {

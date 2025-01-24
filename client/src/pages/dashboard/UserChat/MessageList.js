@@ -36,6 +36,7 @@ const MessageList = ({ isLoading, currentUser, messages = [] }) => {
   return (
     <ul className='list-unstyled mb-5'>
       {isLoading && <Loading />}
+
       {messages?.map((message, index) => {
         return message?.type === 'date' ? (
           <li key={message.content}>
