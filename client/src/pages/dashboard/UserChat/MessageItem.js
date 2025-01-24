@@ -14,7 +14,7 @@ const messageReactionsStyle = {
   gap: '4px'
 }
 
-const MessageItem = React.memo(({ currentUser, message, t, isReply = false, index, messages }) => {
+const MessageItem = React.memo(({ currentUser, message, t, isReply = false, index, messages, key }) => {
   const messageId = message.message_id
   const reactions = useMemo(() => JSON.parse(message?.reactions) || [], [message?.reactions])
   const [showActions, setShowActions] = useState(false)
@@ -79,6 +79,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
 
   return (
     <div
+      key={key}
       className='d-flex flex-column'
       style={{
         width: 'max-content',
@@ -156,7 +157,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}

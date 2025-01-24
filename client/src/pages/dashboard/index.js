@@ -164,6 +164,12 @@ const DashboardPage = (props) => {
 
     return () => {
       window.Echo.disconnect()
+
+      setStoreChat((prev) => ({
+        ...prev,
+        messages: [],
+        previousDay: null
+      }))
     }
   }, [])
 
