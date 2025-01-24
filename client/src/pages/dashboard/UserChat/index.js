@@ -92,8 +92,14 @@ const UserChat = () => {
       restoreScrollPosition()
     } else {
       updateMessages(messagesData.data.data.messages)
+      if (messagesData.data.data.previousDay && !isScrolled) {
+        setStoreChat((prev) => ({
+          ...prev,
+          previousDay: messagesData.data.data.previousDay
+        }))
+      }
     }
-  }, [messagesData, previousDay, saveScrollPosition, restoreScrollPosition, updateMessages])
+  }, [messagesData, previousDay, saveScrollPosition, restoreScrollPosition, updateMessages, isScrolled])
 
   useEffect(() => {
     const scrollElement = ref.current?.getScrollElement()
