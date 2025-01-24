@@ -38,7 +38,7 @@ const UserHead = ({ user }) => {
     // props.setActiveTab(tab)
   }
 
-  const { profile } = useStoreUser((state) => state)
+  const { profile } = useStoreUser((state) => state?.profile)
 
   const handleLogout = async () => {
     clearLS()

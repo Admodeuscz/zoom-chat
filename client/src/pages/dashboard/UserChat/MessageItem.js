@@ -95,7 +95,12 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
             <div
               className='ctext-wrap-content'
               style={{ cursor: 'pointer' }}
-              onClick={() => setShowActions(!showActions)}
+              onClick={() => {
+                setShowActions(!showActions)
+                if (isShowEmojiPicker) {
+                  setIsShowEmojiPicker(false)
+                }
+              }}
             >
               <p className='mb-0'>{message.content}</p>
 

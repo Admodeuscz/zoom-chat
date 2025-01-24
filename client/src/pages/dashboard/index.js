@@ -18,7 +18,7 @@ const DashboardPage = (props) => {
   }
 
   const handleUpdateMessage = (message, type) => {
-    if (isSender(message)) return
+    if (isSender(message) && type === 'CONTENT') return
 
     setStoreChat((prev) => ({
       ...prev,
@@ -35,7 +35,24 @@ const DashboardPage = (props) => {
             content: message.content
           }
         }
-        return m
+        return {
+          ...m,
+          replies: m.replies?.map((r) => {
+            if (r.message_id === message.message_id) {
+              if (type === 'REACTIONS') {
+                return {
+                  ...r,
+                  reactions: message.reactions
+                }
+              }
+              return {
+                ...r,
+                content: message.content
+              }
+            }
+            return r
+          })
+        }
       })
     }))
   }
