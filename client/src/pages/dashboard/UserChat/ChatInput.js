@@ -26,7 +26,10 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
     }
   }
 
-  const toggle = () => setDropdownOpen((prevState) => !prevState)
+  const toggle = () => {
+    if (!onlineUsers?.length && !dropdownOpen) return
+    setDropdownOpen((prevState) => !prevState)
+  }
 
   const handleChangeToUser = (selectedMember) => {
     setStoreUser({
@@ -48,7 +51,6 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
                     <Dropdown isOpen={dropdownOpen} toggle={toggle} size='sm' direction='up'>
                       <DropdownToggle
                         className='text-truncate'
-                        disabled={!onlineUsers?.length}
                         style={{
                           maxWidth: '200px',
                           overflow: 'hidden',

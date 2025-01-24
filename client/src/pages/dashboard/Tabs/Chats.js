@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Input, InputGroup } from 'reactstrap'
 
 //simplebar
 import SimpleBar from 'simplebar-react'
@@ -8,6 +7,7 @@ import SimpleBar from 'simplebar-react'
 //actions
 
 //components
+import { Input, InputGroup } from 'reactstrap'
 import useStoreChat from '../../../store/useStoreChat'
 import { genAvatar } from '../../../utils/utils'
 import OnlineUsers from './OnlineUsers'
@@ -56,7 +56,11 @@ const Chats = () => {
             <ul className='list-unstyled chat-list chat-user-list px-2' id='chat-list'>
               {filteredMembers?.map((member, key) => (
                 <li key={key}>
-                  <Link>
+                  <Link
+                    style={{
+                      cursor: 'default'
+                    }}
+                  >
                     <div className='d-flex align-items-center'>
                       <div className={'chat-user-img ' + member.status + ' align-self-center ms-0'}>
                         <div className='avatar-xs'>

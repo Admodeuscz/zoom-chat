@@ -77,11 +77,11 @@ const UserHead = ({ user }) => {
                     toggleTab('profile')
                   }}
                 >
-                  Profile <i className='ri-profile-line float-end text-muted'></i>
+                  プロフィール <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={handleLogout}>
-                  Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
+                  ログアウト <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
