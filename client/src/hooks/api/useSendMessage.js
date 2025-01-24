@@ -4,6 +4,7 @@ import chatApi from '../../apis/chat.api'
 import { setStoreChat } from '../../store/useStoreChat'
 import useStoreUser from '../../store/useStoreUser'
 import { handleScrollBottom } from '../../utils/utils'
+import { useApiProfile } from './useApiAuth'
 
 export default function useSendMessage(ref = null) {
   const profile = useStoreUser((state) => state?.profile)
@@ -11,6 +12,8 @@ export default function useSendMessage(ref = null) {
   const { mutateAsync: sendMessage } = useMutation({
     mutationFn: (data) => chatApi.sendMessage(data)
   })
+
+  const { refetch: refetchUser } = useApiProfile()
 
   const updateMessages = useCallback((newMessages, shouldPrepend = false) => {
     if (!newMessages) return
@@ -58,6 +61,10 @@ export default function useSendMessage(ref = null) {
         receiver_id: messageObj.receiver_id,
         parent_id: messageObj.parent_message_id
       })
+
+      if (response?.data?.success && !profile.color_id) {
+        await refetchUser()
+      }
 
       if (response?.data?.data?.message_id) {
         messageObj.message_id = response.data.data.message_id

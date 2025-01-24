@@ -28,7 +28,7 @@ export function encodeQueryData(data) {
 }
 
 export function genAvatar(name) {
-  const nameParts = name.split(' ')
+  const nameParts = name?.split(' ')
   if (nameParts.length === 1) {
     return nameParts[0].charAt(0)
   }
@@ -36,7 +36,7 @@ export function genAvatar(name) {
 }
 
 export function getOperatorColor(operator) {
-  return operator?.color?.color_value ?? '#3b82f6'
+  return operator?.color?.color_value ?? '#9966ff'
 }
 
 export const handleScrollBottom = (ref) => {

@@ -64,7 +64,10 @@ const Chats = () => {
                     <div className='d-flex align-items-center'>
                       <div className={'chat-user-img ' + member.status + ' align-self-center ms-0'}>
                         <div className='avatar-xs'>
-                          <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(member) }}>
+                          <span
+                            className='avatar-title rounded-circle'
+                            style={{ background: getOperatorColor(member) }}
+                          >
                             {genAvatar(member.op_name)}
                           </span>
                         </div>

@@ -161,7 +161,7 @@ function LeftSidebarMenu(props) {
                 <div className='avatar-xs mx-auto d-block chat-user-img online'>
                   <span
                     className='avatar-title rounded-circle'
-                    style={{ fontSize: '1rem', backgroundColor: getOperatorColor(profile) }}
+                    style={{ fontSize: '1rem', background: getOperatorColor(profile) }}
                   >
                     {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
                   </span>

@@ -3,22 +3,31 @@
 namespace App\Http\Controllers;
 
 use App\Enums\MessageUpdateEnum;
-use App\Events\GroupMessageSent;
 use App\Events\NewMessageEvent;
 use App\Events\UpdateMessageEvent;
-use App\Events\UserMessageSent;
+use App\Models\Color;
 use App\Models\Message;
 use App\Traits\HasApiResponses;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class MessageController extends Controller
 {
     use HasApiResponses;
+
+    private function setColor($operator)
+    {
+        if ($operator->color_id) {
+            return;
+        }
+
+        $color = Color::select('id')->withCount('operators')->orderBy('operators_count', 'asc')->first();
+        $operator->color_id = $color->id;
+        $operator->save();
+    }
 
     function getMessages(Request $request)
     {
@@ -84,6 +93,8 @@ class MessageController extends Controller
                 'receiver_id' => 'nullable|exists:operators,op_id',
             ]);
 
+            $this->setColor(Auth::user());
+
             if (!empty($data['parent_id'])) {
                 $parentMessage = Message::select('message_id', 'parent_message_id', 'sender_id', 'receiver_id')
                     ->find($data['parent_id']);
@@ -107,7 +118,7 @@ class MessageController extends Controller
                 'reactions' => json_encode([]),
             ]);
 
-            $message->load(['sender.team', 'receiver.team', 'parentMessage.sender.team']);
+            $message->load(['sender.team', 'sender.color', 'receiver.team', 'parentMessage.sender.team']);
 
             broadcast(new NewMessageEvent($message))->toOthers();
 
@@ -159,6 +170,7 @@ class MessageController extends Controller
             $opIdIndex = array_search(Auth::id(), array_column($reactions[$index]['senders'], 'op_id'));
             if ($opIdIndex !== false) {
                 unset($reactions[$index]['senders'][$opIdIndex]);
+                $reactions[$index]['senders'] = array_values($reactions[$index]['senders']);
             } else {
                 $reactions[$index]['senders'][] = [
                     'op_id' => Auth::id(),

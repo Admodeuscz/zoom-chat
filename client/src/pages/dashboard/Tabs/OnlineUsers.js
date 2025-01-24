@@ -7,7 +7,7 @@ import 'react-alice-carousel/lib/alice-carousel.css'
 
 //store
 import useStoreChat from '../../../store/useStoreChat'
-import { genAvatar } from '../../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../../utils/utils'
 
 //Import Images
 const OnlineUsers = () => {
@@ -31,7 +31,12 @@ const OnlineUsers = () => {
                 }}
               >
                 <div className='avatar-xs mx-auto d-block chat-user-img online'>
-                  <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                  <span
+                    className='avatar-title rounded-circle'
+                    style={{
+                      background: getOperatorColor(onlineUser)
+                    }}
+                  >
                     {genAvatar(onlineUser.op_name)}
                   </span>
                   <span className='user-status'></span>

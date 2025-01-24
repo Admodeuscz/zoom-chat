@@ -93,8 +93,11 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
         ) : (
           <div className='chat-avatar'>
             <div className='avatar-xs'>
-              <span className='avatar-title rounded-circle' style={{ background: getOperatorColor(message?.sender) }}>
-                {genAvatar(message?.sender?.op_name)}
+              <span
+                className='avatar-title rounded-circle'
+                style={{ background: getOperatorColor(isSender ? profile : message?.sender) }}
+              >
+                {genAvatar(isSender ? profile?.op_name : message?.sender?.op_name)}
               </span>
             </div>
           </div>
@@ -120,7 +123,11 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
           <div className='ctext-wrap'>
             <div
               className='ctext-wrap-content'
-              style={{ cursor: 'pointer', background: getOperatorColor(message?.sender) }}
+              style={{
+                cursor: 'pointer',
+                background: isSender ? '#d9d9d9' : '#dceaf7',
+                color: '#3d4145'
+              }}
               onClick={() => {
                 setShowActions(!showActions)
                 if (isShowEmojiPicker) {

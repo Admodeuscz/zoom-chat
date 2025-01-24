@@ -165,7 +165,7 @@ const DashboardPage = (props) => {
     return () => {
       window.Echo.disconnect()
     }
-  }, [profile?.op_id])
+  }, [])
 
   return (
     <ChatProvider>

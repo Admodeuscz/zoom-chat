@@ -14,16 +14,16 @@ class ColorSeeder extends Seeder
     public function run(): void
     {
         $colors = [
-            ['color_value' => 'linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #81FBB8 10%, #28C76F 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #FFF6B7 10%, #F6416C 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #E2B0FF 10%, #9F44D3 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #5EFCE8 10%, #736EFE 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #90F7EC 10%, #32CCBC 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #F6CEEC 10%, #D939CD 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #FDD819 10%, #E80505 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #65FDF0 10%, #1D6FA3 100%)'],
-            ['color_value' => 'linear-gradient( 135deg, #70F570 10%, #49C628 100%)'],
+            ['color_value' => '#0396FF'],
+            ['color_value' => '#28C76F'],
+            ['color_value' => '#F6416C'],
+            ['color_value' => '#9F44D3'],
+            ['color_value' => '#736EFE'],
+            ['color_value' => '#32CCBC'],
+            ['color_value' => '#D939CD'],
+            ['color_value' => '#E80505'],
+            ['color_value' => '#1D6FA3'],
+            ['color_value' => '#49C628'],
         ];
 
         foreach ($colors as $color) {

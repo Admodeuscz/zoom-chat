@@ -1,18 +1,15 @@
-import { useQuery } from '@tanstack/react-query'
 import React, { useEffect } from 'react'
-import authApi from '../apis/auth.api'
+import { useApiProfile } from '../hooks/api/useApiAuth'
 import { setStoreUser } from '../store/useStoreUser'
 
 export const AuthProvider = ({ children }) => {
-  const { data } = useQuery({
-    queryKey: ['me'],
-    queryFn: authApi.me
-  })
+  const { data, isFetching } = useApiProfile()
   useEffect(() => {
+    console.log('>')
     if (data?.data?.data) {
       setStoreUser({ profile: data?.data?.data })
     }
-  }, [data])
+  }, [data, isFetching])
 
   return <>{children}</>
 }

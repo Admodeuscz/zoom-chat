@@ -56,7 +56,9 @@ const UserHead = ({ user }) => {
         <ul className='list-inline user-chat-nav text-end mb-0 d-flex justify-content-end align-items-center gap-4'>
           <div className='list-inline-item '>
             <NavLink id='light-dark' onClick={() => onChangeLayoutMode(mode)}>
-              <i className={`${mode === 'light' ? 'ri-sun-line' : 'ri-moon-line'} theme-mode-icon font-size-20 align-middle`}></i>
+              <i
+                className={`${mode === 'light' ? 'ri-sun-line' : 'ri-moon-line'} theme-mode-icon font-size-20 align-middle`}
+              ></i>
             </NavLink>
           </div>
           <li className='list-inline-item'>
@@ -67,7 +69,7 @@ const UserHead = ({ user }) => {
             >
               <DropdownToggle className='nav-link' tag='a'>
                 <div className='avatar-xs'>
-                  <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(profile) }}>
+                  <span className='avatar-title rounded-circle' style={{ background: getOperatorColor(profile) }}>
                     {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
                   </span>
                 </div>

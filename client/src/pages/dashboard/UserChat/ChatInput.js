@@ -7,6 +7,8 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
   const [textMessage, settextMessage] = useState('')
   const [dropdownOpen, setDropdownOpen] = useState(false)
   const toUser = useStoreUser((state) => state?.toUser)
+  const profile = useStoreUser((state) => state?.profile)
+
   const handleChange = (e) => {
     settextMessage(e.target.value)
   }

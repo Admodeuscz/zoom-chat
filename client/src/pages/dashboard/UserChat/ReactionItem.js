@@ -47,6 +47,7 @@ const senderItemStyle = {
 }
 const ReactionItem = React.memo(({ reaction, messageId, index, onReactionClick }) => {
   const tooltipId = `reaction-${messageId}-${index}`
+  console.log('🚀 ~ ReactionItem ~ reaction:', reaction)
   return (
     <React.Fragment>
       <span id={tooltipId} className='reaction-item' style={reactionItemStyle}>
@@ -78,17 +79,18 @@ const ReactionItem = React.memo(({ reaction, messageId, index, onReactionClick }
           `}
         </style>
         <div style={tooltipContentStyle}>
-          {reaction?.senders?.map((sender, idx) => (
-            <div
-              key={idx}
-              style={{
-                ...senderItemStyle,
-                borderBottom: idx !== reaction.senders.length - 1 ? '1px solid #eee' : 'none'
-              }}
-            >
-              {sender.op_name}
-            </div>
-          ))}
+          {Array.isArray(reaction?.senders) &&
+            reaction.senders.map((sender, idx) => (
+              <div
+                key={idx}
+                style={{
+                  ...senderItemStyle,
+                  borderBottom: idx !== reaction.senders.length - 1 ? '1px solid #eee' : 'none'
+                }}
+              >
+                {sender.op_name}
+              </div>
+            ))}
         </div>
       </UncontrolledTooltip>
     </React.Fragment>
