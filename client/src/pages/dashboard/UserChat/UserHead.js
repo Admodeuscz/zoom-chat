@@ -9,7 +9,7 @@ import { openUserSidebar, setFullUser } from '../../../redux/actions'
 import { setStoreChat } from '../../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../../store/useStoreUser'
 import { clearLS } from '../../../utils/auth'
-import { genAvatar } from '../../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../../utils/utils'
 
 const UserHead = ({ user }) => {
   const dispatch = useDispatch()
@@ -53,10 +53,10 @@ const UserHead = ({ user }) => {
   return (
     <React.Fragment>
       <div className='p-3 p-lg-4 border-bottom user-chat-topbar head-profile-avatar'>
-        <ul className='list-inline user-chat-nav text-end mb-0'>
-          <div className='list-inline-item'>
+        <ul className='list-inline user-chat-nav text-end mb-0 d-flex justify-content-end align-items-center gap-4'>
+          <div className='list-inline-item '>
             <NavLink id='light-dark' onClick={() => onChangeLayoutMode(mode)}>
-              <i className='ri-sun-line theme-mode-icon font-size-20 align-middle'></i>
+              <i className={`${mode === 'light' ? 'ri-sun-line' : 'ri-moon-line'} theme-mode-icon font-size-20 align-middle`}></i>
             </NavLink>
           </div>
           <li className='list-inline-item'>
@@ -67,7 +67,7 @@ const UserHead = ({ user }) => {
             >
               <DropdownToggle className='nav-link' tag='a'>
                 <div className='avatar-xs'>
-                  <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                  <span className='avatar-title rounded-circle' style={{ backgroundColor: getOperatorColor(profile) }}>
                     {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
                   </span>
                 </div>
