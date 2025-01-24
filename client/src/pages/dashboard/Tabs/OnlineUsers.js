@@ -7,6 +7,7 @@ import 'react-alice-carousel/lib/alice-carousel.css'
 
 //store
 import useStoreChat from '../../../store/useStoreChat'
+import { genAvatar } from '../../../utils/utils'
 
 //Import Images
 const OnlineUsers = () => {
@@ -33,7 +34,7 @@ const OnlineUsers = () => {
                                 <Link className="user-status-box cursor-pointer">
                                     <div className="avatar-xs mx-auto d-block chat-user-img online">
                                         <span className="avatar-title rounded-circle bg-primary-subtle text-primary">
-                                            {onlineUser.op_name.charAt(0)}
+                                            {genAvatar(onlineUser.op_name)}
                                         </span>
                                         <span className="user-status"></span>
                                     </div>

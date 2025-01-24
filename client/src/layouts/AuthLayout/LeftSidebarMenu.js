@@ -16,13 +16,13 @@ import {
 import { changeLayoutMode, setActiveTab } from '../../redux/actions'
 
 //Import Images
-import logo from '../../assets/images/logo-dark.webp'
 import avatar1 from '../../assets/images/users/avatar-1.jpg'
 
 import { createSelector } from 'reselect'
 import { setStoreChat } from '../../store/useStoreChat'
 import useStoreUser, { setStoreUser } from '../../store/useStoreUser'
 import { clearLS } from '../../utils/auth'
+import { genAvatar } from '../../utils/utils'
 
 function LeftSidebarMenu(props) {
   const dispatch = useDispatch()
@@ -74,13 +74,13 @@ function LeftSidebarMenu(props) {
         <div className='navbar-brand-box'>
           <Link to='/' className='logo logo-dark'>
             <span className='logo-sm'>
-              <img src={logo} alt='logo' height='30' />
+              <img src={'/favicons/icon-32x32.png'} alt='logo' height='30' />
             </span>
           </Link>
 
           <Link to='/' className='logo logo-light'>
             <span className='logo-sm'>
-              <img src={logo} alt='logo' height='30' />
+              <img src={'/favicons/icon-32x32.png'} alt='logo' height='30' />
             </span>
           </Link>
         </div>
@@ -158,7 +158,12 @@ function LeftSidebarMenu(props) {
               toggle={toggle}
             >
               <DropdownToggle className='nav-link mb-2' tag='a'>
-                <img src={avatar1} alt='' className='profile-user rounded-circle' />
+                <div className="avatar-xs mx-auto d-block chat-user-img online">
+                  <span className="avatar-title rounded-circle bg-primary-subtle text-primary" style={{ fontSize: '1rem' }}>
+                    {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
+                  </span>
+                  <span className="user-status"></span>
+                </div>
               </DropdownToggle>
               <DropdownMenu>
                 <DropdownItem
