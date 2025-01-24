@@ -113,7 +113,7 @@ class MessageController extends Controller
 
             DB::commit();
 
-            return $this->responseApi([], true, 200);
+            return $this->responseApi(['message_id' => $message->message_id], true, 200);
 
         } catch (\Exception $e) {
             DB::rollBack();

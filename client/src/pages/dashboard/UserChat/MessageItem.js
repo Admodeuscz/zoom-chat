@@ -1,10 +1,11 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useSelector } from 'react-redux'
 import { genAvatar } from '../../../utils/utils'
 import DisplayName from './DisplayName'
 import ReactionItem from './ReactionItem'
 import ReplyBox from './ReplyBox'
+import EmojiPickerBox from './EmojiPickerBox'
+import useStoreUser from '../../../store/useStoreUser'
 
 const messageReactionsStyle = {
   display: 'flex',
@@ -18,9 +19,10 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
   const [showActions, setShowActions] = useState(false)
   const [showReplyBox, setShowReplyBox] = useState(false)
   const actionsRef = useRef(null)
-  const profile = useSelector((state) => state.profile)
+  const profile = useStoreUser((state) => state?.profile)
   const isSender = useMemo(() => message?.sender_id === profile?.op_id, [message?.sender_id, profile?.op_id])
   const [isShowRepliesList, setIsShowRepliesList] = useState(false)
+  const [isShowEmojiPicker, setIsShowEmojiPicker] = useState(false)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -42,29 +44,15 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
     []
   )
 
-  const handleShowEmoji = useCallback(
-    (e) => {
-      e.stopPropagation()
-      const rect = e.target.getBoundingClientRect()
+  const handleShowEmoji = (e) => {
+    e.stopPropagation()
+    setIsShowEmojiPicker(true)
+  }
 
-      const showEvent = new CustomEvent('showEmojiPicker', {
-        detail: {
-          messageId,
-          position: {
-            x: rect.left - 30,
-            y: rect.top - 50
-          }
-        }
-      })
-      document.dispatchEvent(showEvent)
-    },
-    [messageId]
-  )
-
-  const handleShowReplyBox = useCallback((e) => {
+  const handleShowReplyBox = (e) => {
     e.stopPropagation()
     setShowReplyBox((prev) => !prev)
-  }, [])
+  }
 
   const formattedTime = useMemo(() => moment(message.created_at).format('hh:mm A'), [message.created_at])
 
@@ -130,7 +118,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
@@ -175,6 +163,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
             />
           </>
         ))}
+      <EmojiPickerBox message={message} marginLeft={'51.2px'} isShow={isShowEmojiPicker} setIsShow={setIsShowEmojiPicker} />
       <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
     </div>
   )

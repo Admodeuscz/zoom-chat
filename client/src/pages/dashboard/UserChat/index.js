@@ -3,7 +3,6 @@ import SimpleBar from 'simplebar-react'
 
 import UserProfileSidebar from '../../../components/UserProfileSidebar'
 import ChatInput from './ChatInput'
-import EmojiPickerPortal from './EmojiPickerPortal'
 import MessageList from './MessageList'
 import UserHead from './UserHead'
 
@@ -128,7 +127,6 @@ const UserChat = () => {
         </div>
         <UserProfileSidebar user={profile} />
       </div>
-      <EmojiPickerPortal />
     </div>
   )
 }

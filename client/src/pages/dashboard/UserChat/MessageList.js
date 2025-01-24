@@ -36,13 +36,13 @@ const MessageList = ({ isLoading, currentUser, messages = [] }) => {
   return (
     <ul className='list-unstyled mb-0'>
       {isLoading && <Loading />}
-      {messages?.map((message) => {
+      {messages?.map((message, index) => {
         return message?.type === 'date' ? (
           <li key={message.content}>
             <DateDivider date={message.content} />
           </li>
         ) : (
-          <li key={message.message_id}>
+          <li key={`${message.message_id}-${index}`}>
             <MessageItem message={message} currentUser={currentUser} t={t} />
           </li>
         )

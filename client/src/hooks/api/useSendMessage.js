@@ -8,8 +8,8 @@ import { handleScrollBottom } from '../../utils/utils'
 export default function useSendMessage(ref = null) {
   const profile = useStoreUser((state) => state?.profile)
 
-  const { mutate: sendMessage } = useMutation({
-    mutationFn: (data) => chatApi.sendMessage(data)
+  const { mutateAsync: sendMessage } = useMutation({
+    mutationFn: (data) => chatApi.sendMessage(data),
   })
 
   const updateMessages = useCallback((newMessages, shouldPrepend = false) => {
@@ -38,7 +38,7 @@ export default function useSendMessage(ref = null) {
   }, [])
 
   const handleAddMessage = useCallback(
-    (message, toUser, parent_id = null) => {
+    async (message, toUser, parent_id = null) => {
       const messageObj = {
         content: message,
         receiver_id: toUser?.op_id || null,
@@ -52,11 +52,15 @@ export default function useSendMessage(ref = null) {
 
       updateMessages(messageObj)
 
-      sendMessage({
+      const response = await sendMessage({
         content: messageObj.content,
         receiver_id: messageObj.receiver_id,
         parent_id: messageObj.parent_message_id
       })
+
+      if (response?.data?.data?.message_id) {
+        messageObj.message_id = response.data.data.message_id
+      }
 
       if (ref?.current && !parent_id) {
         handleScrollBottom(ref)
