@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\Color;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Color;
 
 class ColorSeeder extends Seeder
 {
@@ -14,16 +14,16 @@ class ColorSeeder extends Seeder
     public function run(): void
     {
         $colors = [
-            ['color_value' => '#654321'],
-            ['color_value' => '#A9A9A9'],
-            ['color_value' => '#696969'],
-            ['color_value' => '#708090'],
-            ['color_value' => '#36454F'],
-            ['color_value' => '#000080'],
-            ['color_value' => '#00008B'],
-            ['color_value' => '#4169E1'],
-            ['color_value' => '#006400'],
-            ['color_value' => '#228B22'],
+            ['color_value' => 'linear-gradient( 135deg, #ABDCFF 10%, #0396FF 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #81FBB8 10%, #28C76F 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #FFF6B7 10%, #F6416C 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #E2B0FF 10%, #9F44D3 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #5EFCE8 10%, #736EFE 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #90F7EC 10%, #32CCBC 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #F6CEEC 10%, #D939CD 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #FDD819 10%, #E80505 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #65FDF0 10%, #1D6FA3 100%)'],
+            ['color_value' => 'linear-gradient( 135deg, #70F570 10%, #49C628 100%)'],
         ];
 
         foreach ($colors as $color) {

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Color;
 use App\Models\Operator;
 use App\Traits\HasApiResponses;
 use Illuminate\Http\Request;
@@ -9,13 +10,13 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
-use App\Models\Color;
 
 class AuthController extends Controller
 {
     use HasApiResponses;
 
-    private function setColor(Operator $operator) {
+    private function setColor(Operator $operator)
+    {
         if ($operator->color_id) {
             return;
         }
@@ -77,14 +78,14 @@ class AuthController extends Controller
         $token = $operator->createToken('auth-token')->plainTextToken;
 
         return $this->responseApi([
-            'operator' => $operator,
+            'operator' => $operator->load('color'),
             'access_token' => $token
         ], true, 200);
     }
 
     public function me(Request $request)
     {
-        return $this->responseApi($request->user(), true, 200);
+        return $this->responseApi(Auth::user()->load('color'), true, 200);
     }
 
     public function logout(Request $request)

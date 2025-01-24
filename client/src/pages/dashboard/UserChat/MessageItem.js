@@ -115,7 +115,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
           <div className='ctext-wrap'>
             <div
               className='ctext-wrap-content'
-              style={{ cursor: 'pointer', backgroundColor: getOperatorColor(message?.sender) }}
+              style={{ cursor: 'pointer', background: getOperatorColor(message?.sender) }}
               onClick={() => {
                 setShowActions(!showActions)
                 if (isShowEmojiPicker) {

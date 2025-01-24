@@ -9,7 +9,7 @@ export default function useSendMessage(ref = null) {
   const profile = useStoreUser((state) => state?.profile)
 
   const { mutateAsync: sendMessage } = useMutation({
-    mutationFn: (data) => chatApi.sendMessage(data),
+    mutationFn: (data) => chatApi.sendMessage(data)
   })
 
   const updateMessages = useCallback((newMessages, shouldPrepend = false) => {
@@ -39,6 +39,7 @@ export default function useSendMessage(ref = null) {
 
   const handleAddMessage = useCallback(
     async (message, toUser, parent_id = null) => {
+      console.log(profile)
       const messageObj = {
         content: message,
         receiver_id: toUser?.op_id || null,

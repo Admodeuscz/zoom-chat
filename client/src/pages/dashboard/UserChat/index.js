@@ -102,6 +102,13 @@ const UserChat = () => {
         }))
       }
     }
+
+    return () => {
+      setStoreChat((prev) => ({
+        ...prev,
+        messages: []
+      }))
+    }
   }, [messagesData])
 
   useEffect(() => {
