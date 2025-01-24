@@ -13,11 +13,11 @@ const DateDivider = React.memo(({ date }) => {
     const yesterday = moment().subtract(1, 'days')
 
     if (messageDate.isSame(today, 'day')) {
-      return t('Today')
+      return t('今日')
     }
 
     if (messageDate.isSame(yesterday, 'day')) {
-      return t('Yesterday')
+      return t('昨日')
     }
 
     return messageDate.format('DD/MM/YYYY')

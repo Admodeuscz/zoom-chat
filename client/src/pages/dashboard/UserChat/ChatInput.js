@@ -33,7 +33,6 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
       toUser: selectedMember || null
     })
   }
-
   const onlineUsers = useStoreChat((state) => state?.onlineUsers) ?? []
 
   return (
@@ -45,10 +44,11 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
               <div className='position-relative'>
                 {!isReply && (
                   <div className='d-flex align-items-center mb-2'>
-                    <span className='me-2'>To:</span>
+                    <span className='me-2'>宛先:</span>
                     <Dropdown isOpen={dropdownOpen} toggle={toggle} size='sm' direction='up'>
                       <DropdownToggle
                         className='text-truncate'
+                        disabled={!onlineUsers?.length}
                         style={{
                           maxWidth: '200px',
                           overflow: 'hidden',
@@ -58,10 +58,12 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
                           fontSize: '12px'
                         }}
                       >
-                        {toUser?.op_name || 'Everyone'}
+                        {toUser?.op_name || '全員'}
                       </DropdownToggle>
                       <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
-                        <DropdownItem onClick={() => handleChangeToUser(null)}>Everyone</DropdownItem>
+                        {onlineUsers?.length > 0 && (
+                          <DropdownItem onClick={() => handleChangeToUser(null)}>全員</DropdownItem>
+                        )}
                         {onlineUsers?.map((onlineUser) => (
                           <DropdownItem key={onlineUser.op_id} onClick={() => handleChangeToUser(onlineUser)}>
                             {onlineUser.op_name}

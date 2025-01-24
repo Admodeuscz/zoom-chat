@@ -2,12 +2,12 @@ import React, { useState } from 'react'
 import { Card, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
 
 //Import components
-import avatar1 from '../../../assets/images/users/avatar-1.jpg'
 import CustomCollapse from '../../../components/CustomCollapse'
 
 //i18n
 import { useTranslation } from 'react-i18next'
 import useStoreUser from '../../../store/useStoreUser'
+import { genAvatar } from '../../../utils/utils'
 
 function Profile(props) {
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -44,7 +44,11 @@ function Profile(props) {
 
         <div className='text-center p-4 border-bottom'>
           <div className='mb-4'>
-            <img src={avatar1} className='rounded-circle avatar-lg img-thumbnail' alt='Chatting system' />
+            <div className='avatar-lg mx-auto'>
+              <span className='avatar-title rounded-circle bg-primary-subtle text-primary'>
+                {genAvatar(profile?.op_name)}
+              </span>
+            </div>
           </div>
 
           <h5 className='font-size-16 mb-1 text-truncate'>神奈川　太郎</h5>
