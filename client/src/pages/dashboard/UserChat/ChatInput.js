@@ -37,7 +37,7 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
 
   return (
     <React.Fragment>
-      <div className={`chat-input-section p-2 ${!isReply ? 'p-lg-3' : ''} mb-0 ${!isReply ? 'border-top' : ''}`}>
+      <div className={`p-2 ${!isReply ? 'p-lg-3 chat-input-section' : ''} mb-0 ${!isReply ? 'border-top' : ''}`}>
         <Form onSubmit={(e) => handleSubmit(e, { textMessage, toUser })}>
           <Row className='g-0'>
             <Col>
