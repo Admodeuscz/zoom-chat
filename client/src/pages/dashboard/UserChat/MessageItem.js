@@ -74,11 +74,12 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
 
   return (
     <div
-      className='d-flex flex-column mb-2'
+      className='d-flex flex-column'
       style={{
         width: 'max-content',
         marginLeft: isReply ? '51.2px' : '0',
-        maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)'
+        maxWidth: isReply ? '100%' : 'calc(100% - 51.2px)',
+        marginBottom: !isSameMessage() ? '8px' : '0'
       }}
     >
       <div className='conversation-list'>
@@ -143,7 +144,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
