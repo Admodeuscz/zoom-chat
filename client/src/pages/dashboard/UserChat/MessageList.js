@@ -43,7 +43,7 @@ const MessageList = ({ isLoading, currentUser, messages = [] }) => {
           </li>
         ) : (
           <li key={`${message.message_id}-${index}`}>
-            <MessageItem message={message} currentUser={currentUser} t={t} />
+            <MessageItem message={message} currentUser={currentUser} t={t} messages={messages} index={index} />
           </li>
         )
       })}

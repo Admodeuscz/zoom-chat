@@ -84,22 +84,25 @@ const UserChat = () => {
   }, [handleLoadMore])
 
   useEffect(() => {
-    if (!messagesData) return
+    if (!messagesData?.data?.data?.messages) return
+
+    const newMessages = messagesData.data.data.messages
+    const newPreviousDay = messagesData.data.data.previousDay
 
     if (previousDay) {
       saveScrollPosition()
-      updateMessages(messagesData.data.data.messages, true)
+      updateMessages(newMessages, true)
       restoreScrollPosition()
     } else {
-      updateMessages(messagesData.data.data.messages)
-      if (messagesData.data.data.previousDay && !isScrolled) {
+      updateMessages(newMessages)
+      if (newPreviousDay && !isScrolled) {
         setStoreChat((prev) => ({
           ...prev,
-          previousDay: messagesData.data.data.previousDay
+          previousDay: newPreviousDay
         }))
       }
     }
-  }, [messagesData, previousDay, saveScrollPosition, restoreScrollPosition, updateMessages, isScrolled])
+  }, [messagesData])
 
   useEffect(() => {
     const scrollElement = ref.current?.getScrollElement()
@@ -125,7 +128,12 @@ const UserChat = () => {
         <div className='w-100 overflow-hidden position-relative d-flex flex-column pt-1' style={{ height: '100vh' }}>
           <UserHead user={profile} />
 
-          <SimpleBar style={{ maxHeight: '100%', flex: 1 }} ref={ref} className='chat-conversation p-2 p-lg-4' id='messages'>
+          <SimpleBar
+            style={{ maxHeight: '100%', flex: 1 }}
+            ref={ref}
+            className='chat-conversation p-2 p-lg-4'
+            id='messages'
+          >
             <MessageList messages={messages} isLoading={isFetching} currentUser={profile} />
           </SimpleBar>
 

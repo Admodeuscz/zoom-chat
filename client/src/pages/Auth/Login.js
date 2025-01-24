@@ -56,8 +56,6 @@ const Login = (props) => {
     }
   })
 
-  document.title = 'Login | Chatvia React - Responsive Bootstrap 5 Chat App'
-
   return (
     <React.Fragment>
       <div className='account-pages my-5 pt-sm-5'>
