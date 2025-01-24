@@ -34,7 +34,7 @@ const MessageList = ({ isLoading, currentUser, messages = [] }) => {
   const { t } = useTranslation()
 
   return (
-    <ul className='list-unstyled mb-0'>
+    <ul className='list-unstyled mb-5'>
       {isLoading && <Loading />}
       {messages?.map((message, index) => {
         return message?.type === 'date' ? (

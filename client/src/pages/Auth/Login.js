@@ -38,7 +38,7 @@ const Login = (props) => {
       navigate('/dashboard')
     },
     onError: (error) => {
-      setError(error?.message || 'ログインに失敗しました')
+      setError('アカウントまたはパスワードが間違っています')
     }
   })
 
