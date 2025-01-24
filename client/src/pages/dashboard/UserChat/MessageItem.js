@@ -51,6 +51,9 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
 
   const handleShowReplyBox = (e) => {
     e.stopPropagation()
+    if (!showReplyBox) {
+      setIsShowRepliesList(true)
+    }
     setShowReplyBox((prev) => !prev)
   }
 
@@ -151,10 +154,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
           <div
             className='text-primary'
             onClick={() => {
-              if (isShowRepliesList) {
-                setShowReplyBox(false)
-              }
-              setIsShowRepliesList(!isShowRepliesList)
+              setIsShowRepliesList((prev) => !prev)
             }}
             style={{ cursor: 'pointer', fontSize: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}
           >

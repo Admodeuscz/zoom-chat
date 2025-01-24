@@ -1,5 +1,5 @@
 import { useMutation } from '@tanstack/react-query'
-import React from 'react'
+import React, { useEffect, useRef } from 'react'
 import chatApi from '../../../apis/chat.api'
 import EmojiPicker from '../../../components/EmojiPicker'
 import { setStoreChat } from '../../../store/useStoreChat'
@@ -7,7 +7,7 @@ import useStoreUser from '../../../store/useStoreUser'
 
 const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
   const profile = useStoreUser((state) => state?.profile)
-
+  const ref = useRef(null)
   const { mutate: updateEmoji } = useMutation({
     mutationFn: (data) => chatApi.updateEmoji(data)
   })
@@ -84,6 +84,17 @@ const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
     })
   }
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (ref.current && !ref.current.contains(event.target)) {
+        setIsShow(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [setIsShow])
+
   return (
     isShow && (
       <div
@@ -93,6 +104,7 @@ const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
           left: marginLeft,
           zIndex: 1000
         }}
+        ref={ref}
       >
         <EmojiPicker onEmojiClick={handleEmojiClick} />
       </div>

@@ -125,7 +125,7 @@ const UserChat = () => {
         <div className='w-100 overflow-hidden position-relative'>
           <UserHead user={profile} />
 
-          <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-5 p-lg-4' id='messages'>
+          <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-2 p-lg-4' id='messages'>
             <MessageList messages={messages} isLoading={isFetching} currentUser={profile} />
           </SimpleBar>
 
