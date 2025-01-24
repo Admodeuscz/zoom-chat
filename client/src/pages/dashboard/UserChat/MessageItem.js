@@ -1,7 +1,7 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useStoreUser from '../../../store/useStoreUser'
-import { genAvatar } from '../../../utils/utils'
+import { genAvatar, getOperatorColor } from '../../../utils/utils'
 import DisplayName from './DisplayName'
 import EmojiPickerBox from './EmojiPickerBox'
 import ReactionItem from './ReactionItem'
@@ -114,7 +114,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
           <div className='ctext-wrap'>
             <div
               className='ctext-wrap-content'
-              style={{ cursor: 'pointer' }}
+              style={{ cursor: 'pointer', backgroundColor: getOperatorColor(message?.sender) }}
               onClick={() => {
                 setShowActions(!showActions)
                 if (isShowEmojiPicker) {
@@ -143,7 +143,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}

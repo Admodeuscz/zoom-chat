@@ -35,6 +35,10 @@ export function genAvatar(name) {
   return `${nameParts[0].charAt(0)}${nameParts[nameParts.length - 1].charAt(0)}`
 }
 
+export function getOperatorColor(operator) {
+  return operator?.color?.color_value ?? '#333'
+}
+
 export const handleScrollBottom = (ref) => {
   if (ref.current?.el) {
     ref.current.getScrollElement().scrollTop = ref.current.getScrollElement().scrollHeight
