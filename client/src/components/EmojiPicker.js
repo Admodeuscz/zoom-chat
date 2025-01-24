@@ -1,21 +1,13 @@
 import React from 'react'
 
-import thumbsUp from '../assets/images/emojis/1f44d.png'
-import thumbsDown from '../assets/images/emojis/1f44e.png'
-import smile from '../assets/images/emojis/1f603.png'
-import angry from '../assets/images/emojis/1f621.png'
-import cry from '../assets/images/emojis/1f622.png'
-import pray from '../assets/images/emojis/1f64f.png'
-import heart from '../assets/images/emojis/2764-fe0f.png'
-
 const EMOJIS = [
-  { code: '1f44d', src: thumbsUp },
-  { code: '1f44e', src: thumbsDown },
-  { code: '1f64f', src: pray },
-  { code: '1f603', src: smile },
-  { code: '1f621', src: angry },
-  { code: '1f622', src: cry },
-  { code: '2764-fe0f', src: heart }
+  { code: '1f44d' },
+  { code: '1f44e' },
+  { code: '1f64f' },
+  { code: '1f603' },
+  { code: '1f621' },
+  { code: '1f622' },
+  { code: '2764-fe0f' }
 ]
 
 const EmojiPicker = ({ style = {}, onEmojiClick }) => {
