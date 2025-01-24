@@ -25,10 +25,15 @@ class UpdateMessageEvent implements ShouldBroadcastNow
         $this->type = $type;
     }
 
-    public function broadcastOn(): Channel
+    public function broadcastOn()
     {
         if ($this->message->receiver_id) {
-            return new PrivateChannel('user-chat.' . $this->message->receiver_id);
+            // gửi riêng cho cả người nhận và người gửi
+
+            return [
+                new PrivateChannel('user-chat.' . $this->message->receiver_id),
+                new PrivateChannel('user-chat.' . $this->message->sender_id),
+            ];
         }
 
         return new PresenceChannel('group-chat');
