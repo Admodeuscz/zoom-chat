@@ -132,11 +132,11 @@ function LeftSidebarMenu(props) {
                     toggleTab('profile')
                   }}
                 >
-                  Profile <i className='ri-profile-line float-end text-muted'></i>
+                  プロフィール <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={handleLogout}>
-                  Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
+                  ログアウト <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>
@@ -158,11 +158,14 @@ function LeftSidebarMenu(props) {
               toggle={toggle}
             >
               <DropdownToggle className='nav-link mb-2' tag='a'>
-                <div className="avatar-xs mx-auto d-block chat-user-img online">
-                  <span className="avatar-title rounded-circle bg-primary-subtle text-primary" style={{ fontSize: '1rem' }}>
+                <div className='avatar-xs mx-auto d-block chat-user-img online'>
+                  <span
+                    className='avatar-title rounded-circle bg-primary-subtle text-primary'
+                    style={{ fontSize: '1rem' }}
+                  >
                     {profile?.op_name ? genAvatar(profile?.op_name) : genAvatar('Guest')}
                   </span>
-                  <span className="user-status"></span>
+                  <span className='user-status'></span>
                 </div>
               </DropdownToggle>
               <DropdownMenu>
@@ -171,11 +174,11 @@ function LeftSidebarMenu(props) {
                     toggleTab('profile')
                   }}
                 >
-                  Profile <i className='ri-profile-line float-end text-muted'></i>
+                  プロフィール <i className='ri-profile-line float-end text-muted'></i>
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem onClick={handleLogout}>
-                  Log out <i className='ri-logout-circle-r-line float-end text-muted'></i>
+                  ログアウト <i className='ri-logout-circle-r-line float-end text-muted'></i>
                 </DropdownItem>
               </DropdownMenu>
             </Dropdown>

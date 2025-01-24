@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Card, Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap'
+import { Card } from 'reactstrap'
 
 //Import components
 import CustomCollapse from '../../../components/CustomCollapse'
@@ -26,7 +26,7 @@ function Profile(props) {
     <React.Fragment>
       <div>
         <div className='px-4 pt-4'>
-          <div className='user-chat-nav float-end'>
+          {/* <div className='user-chat-nav float-end'>
             <Dropdown isOpen={dropdownOpen} toggle={toggle}>
               <DropdownToggle tag='a' className='font-size-18 text-muted dropdown-toggle'>
                 <i className='ri-more-2-fill'></i>
@@ -38,8 +38,8 @@ function Profile(props) {
                 <DropdownItem>{t('Another action')}</DropdownItem>
               </DropdownMenu>
             </Dropdown>
-          </div>
-          <h4 className='mb-0'>{t('My Profile')}</h4>
+          </div> */}
+          <h4 className='mb-0'>私のプロフィール</h4>
         </div>
 
         <div className='text-center p-4 border-bottom'>
@@ -53,7 +53,7 @@ function Profile(props) {
 
           <h5 className='font-size-16 mb-1 text-truncate'>神奈川　太郎</h5>
           <p className='text-muted text-truncate mb-1'>
-            <i className='ri-record-circle-fill font-size-10 text-success me-1 d-inline-block'></i> {t('Active')}
+            <i className='ri-record-circle-fill font-size-10 text-success me-1 d-inline-block'></i> アクティブ
           </p>
         </div>
         {/* End profile user  */}
@@ -74,12 +74,12 @@ function Profile(props) {
                 toggleCollapse={toggleCollapse1}
               >
                 <div>
-                  <p className='text-muted mb-1'>{t('Name')}</p>
+                  <p className='text-muted mb-1'>名前</p>
                   <h5 className='font-size-14'>{profile?.op_name}</h5>
                 </div>
 
                 <div className='mt-4'>
-                  <p className='text-muted mb-1'>{t('Email')}</p>
+                  <p className='text-muted mb-1'>メール</p>
                   <h5 className='font-size-14'>{profile?.email}</h5>
                 </div>
               </CustomCollapse>
