@@ -45,15 +45,15 @@ const senderItemStyle = {
   fontSize: '13px',
   whiteSpace: 'nowrap'
 }
-const ReactionItem = React.memo(({ reaction, messageId, index }) => {
+const ReactionItem = React.memo(({ reaction, messageId, index, onReactionClick }) => {
   const tooltipId = `reaction-${messageId}-${index}`
-
   return (
     <React.Fragment>
       <span id={tooltipId} className='reaction-item' style={reactionItemStyle}>
         <img
           src={`/emojis/${reaction?.emoji_id}.png`}
           alt={reaction?.emoji_id}
+          onClick={() => onReactionClick?.(reaction)}
           style={{
             width: '16px',
             height: '16px'

@@ -54,7 +54,7 @@ const ChatInput = ({ onaddMessage, isReply = false, parent_id = null }) => {
                         style={{
                           maxWidth: '200px',
                           overflow: 'hidden',
-                          backgroundColor: '#0e72ed',
+                          backgroundColor: '#3b82f6',
                           borderRadius: '12px',
                           padding: '2px 15px',
                           fontSize: '12px'

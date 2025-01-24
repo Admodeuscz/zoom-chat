@@ -36,7 +36,7 @@ export function genAvatar(name) {
 }
 
 export function getOperatorColor(operator) {
-  return operator?.color?.color_value ?? '#3e77e9'
+  return operator?.color?.color_value ?? '#3b82f6'
 }
 
 export const handleScrollBottom = (ref) => {

@@ -1,6 +1,7 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import useStoreUser from '../../../store/useStoreUser'
+import { handleEmojiClick } from '../../../utils/emojiHandler'
 import { genAvatar, getOperatorColor } from '../../../utils/utils'
 import DisplayName from './DisplayName'
 import EmojiPickerBox from './EmojiPickerBox'
@@ -71,6 +72,10 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
     }
     return index > 0 && messages[index - 1]?.sender_id === message?.sender_id
   }, [message, messages, index])
+
+  const handleReactionClick = (reaction) => {
+    handleEmojiClick(message, { code: reaction.emoji_id }, profile)
+  }
 
   return (
     <div
@@ -164,7 +169,13 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false, inde
       </div>
       <div className='message-reactions' style={messageReactionsStyle}>
         {reactions?.map((reaction, index) => (
-          <ReactionItem key={`${messageId}-${index}`} reaction={reaction} messageId={messageId} index={index} />
+          <ReactionItem
+            key={`${messageId}-${index}`}
+            reaction={reaction}
+            messageId={messageId}
+            index={index}
+            onReactionClick={handleReactionClick}
+          />
         ))}
       </div>
       {message.replies?.length > 0 && (
