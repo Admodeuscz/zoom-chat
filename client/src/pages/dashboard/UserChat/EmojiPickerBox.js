@@ -1,9 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
-import EmojiPicker from 'emoji-picker-react'
 import React from 'react'
 import chatApi from '../../../apis/chat.api'
-import useStoreUser from '../../../store/useStoreUser'
+import EmojiPicker from '../../../components/EmojiPicker'
 import { setStoreChat } from '../../../store/useStoreChat'
+import useStoreUser from '../../../store/useStoreUser'
 
 const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
   const profile = useStoreUser((state) => state?.profile)
@@ -14,11 +14,11 @@ const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
 
   const handleUpdateReactionLocal = (messageChecked, emoji) => {
     const reactions = JSON.parse(messageChecked.reactions)
-    const reactionIndex = reactions.findIndex((reaction) => reaction.emoji_id === emoji.unified)
+    const reactionIndex = reactions.findIndex((reaction) => reaction.emoji_id === emoji.code)
     if (reactionIndex === -1) {
       reactions.push({
-        emoji_id: emoji.unified,
-        icon: emoji.emoji,
+        emoji_id: emoji.code,
+        icon: '',
         senders: [{ op_id: profile.op_id, op_name: profile.op_name }]
       })
 
@@ -78,22 +78,26 @@ const EmojiPickerBox = ({ message, isShow, setIsShow, marginLeft }) => {
     updateEmoji({
       messageId: message.message_id,
       emoji: {
-        emoji_id: emoji.unified,
-        icon: emoji.emoji
+        emoji_id: emoji.code,
+        icon: ''
       }
     })
   }
 
-  return (isShow && <div className='mt-2' style={{ marginLeft }}>
-    <EmojiPicker
-      reactionsDefaultOpen={true}
-      searchDisabled={true}
-      skinTonesDisabled={true}
-      onEmojiClick={handleEmojiClick}
-      lazyLoadEmojis={true}
-      allowExpandReactions={false}
-    />
-  </div>)
+  return (
+    isShow && (
+      <div
+        style={{
+          position: 'absolute',
+          top: '100%',
+          left: marginLeft,
+          zIndex: 1000
+        }}
+      >
+        <EmojiPicker onEmojiClick={handleEmojiClick} />
+      </div>
+    )
+  )
 }
 
 export default EmojiPickerBox

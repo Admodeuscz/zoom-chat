@@ -1,11 +1,11 @@
 import moment from 'moment'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import useStoreUser from '../../../store/useStoreUser'
 import { genAvatar } from '../../../utils/utils'
 import DisplayName from './DisplayName'
+import EmojiPickerBox from './EmojiPickerBox'
 import ReactionItem from './ReactionItem'
 import ReplyBox from './ReplyBox'
-import EmojiPickerBox from './EmojiPickerBox'
-import useStoreUser from '../../../store/useStoreUser'
 
 const messageReactionsStyle = {
   display: 'flex',
@@ -123,7 +123,7 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
                     <i className='ri-clipboard-line'></i>
                   </div>
                   {isSender && (
-                    <div className='message-actions-item' onClick={handleActionClick(() => { })}>
+                    <div className='message-actions-item' onClick={handleActionClick(() => {})}>
                       <i className='ri-edit-box-line'></i>
                     </div>
                   )}
@@ -131,6 +131,14 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
               )}
             </div>
           </div>
+
+          {/* Emoji box */}
+          <EmojiPickerBox
+            message={message}
+            marginLeft={'51.2px'}
+            isShow={isShowEmojiPicker}
+            setIsShow={setIsShowEmojiPicker}
+          />
         </div>
       </div>
       <div className='message-reactions' style={messageReactionsStyle}>
@@ -168,7 +176,6 @@ const MessageItem = React.memo(({ currentUser, message, t, isReply = false }) =>
             />
           </>
         ))}
-      <EmojiPickerBox message={message} marginLeft={'51.2px'} isShow={isShowEmojiPicker} setIsShow={setIsShowEmojiPicker} />
       <ReplyBox messageId={messageId} marginLeft={'51.2px'} expanded={showReplyBox} />
     </div>
   )

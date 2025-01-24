@@ -51,7 +51,14 @@ const ReactionItem = React.memo(({ reaction, messageId, index }) => {
   return (
     <React.Fragment>
       <span id={tooltipId} className='reaction-item' style={reactionItemStyle}>
-        <span>{reaction?.icon}</span>
+        <img
+          src={`/emojis/${reaction?.emoji_id}.png`}
+          alt={reaction?.emoji_id}
+          style={{
+            width: '16px',
+            height: '16px'
+          }}
+        />
         {reaction?.senders?.length > 0 && <span style={{ fontWeight: '500' }}>{reaction?.senders?.length}</span>}
       </span>
       <UncontrolledTooltip target={tooltipId} placement='top' className='custom-tooltip' style={tooltipStyle}>

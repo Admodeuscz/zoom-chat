@@ -134,7 +134,7 @@ class MessageController extends Controller
 
             $validator = Validator::make($request->all(), [
                 'emoji_id' => 'required|string',
-                'icon' => 'required|string',
+                'icon' => 'nullable|string',
             ]);
 
             if ($validator->fails()) {
