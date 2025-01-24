@@ -122,10 +122,10 @@ const UserChat = () => {
   return (
     <div className='user-chat w-100 overflow-hidden'>
       <div className='d-lg-flex'>
-        <div className='w-100 overflow-hidden position-relative'>
+        <div className='w-100 overflow-hidden position-relative d-flex flex-column pt-1' style={{ height: '100vh' }}>
           <UserHead user={profile} />
 
-          <SimpleBar style={{ maxHeight: '100%' }} ref={ref} className='chat-conversation p-2 p-lg-4' id='messages'>
+          <SimpleBar style={{ maxHeight: '100%', flex: 1 }} ref={ref} className='chat-conversation p-2 p-lg-4' id='messages'>
             <MessageList messages={messages} isLoading={isFetching} currentUser={profile} />
           </SimpleBar>
 
