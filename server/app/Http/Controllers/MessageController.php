@@ -65,6 +65,7 @@ class MessageController extends Controller
                     ->orWhere('sender_id', Auth::id());
             })
             ->whereDate('created_at', '<', $date)
+            ->orderBy('created_at', 'desc')
             ->first();
 
         $previousDay = $previousDayMessage ? $previousDayMessage->created_at->toDateString() : null;

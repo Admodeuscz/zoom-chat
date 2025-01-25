@@ -58,57 +58,93 @@ const DashboardPage = (props) => {
   }
 
   useEffect(() => {
-    window.Pusher = Pusher
+    const handleConnectEcho = () => {
+      console.log('-------------------------')
+      console.log('echo init');
+      console.log('-------------------------');
+      if (window.Echo) {
+        window.Echo.disconnect()
+      }
 
-    window.Echo = new Echo({
-      broadcaster: 'reverb',
-      key: process.env.REACT_APP_PUSHER_APP_KEY,
-      wsHost: process.env.REACT_APP_PUSHER_APP_HOST,
-      wsPort: process.env.REACT_APP_PUSHER_APP_PORT,
-      forceTLS: (process.env.REACT_APP_PUSHER_APP_SCHEME ?? 'https') === 'https',
-      enabledTransports: ['ws', 'wss'],
-      authorizer: (channel, options) => {
-        return {
-          authorize: (socketId, callback) => {
-            http
-              .post('/broadcasting/auth', {
-                socket_id: socketId,
-                channel_name: channel.name
-              })
-              .then((response) => {
-                callback(false, response.data)
-              })
-              .catch((error) => {
-                callback(true, error)
-              })
+      window.Pusher = Pusher
+
+      window.Echo = new Echo({
+        broadcaster: 'reverb',
+        key: process.env.REACT_APP_PUSHER_APP_KEY,
+        wsHost: process.env.REACT_APP_PUSHER_APP_HOST,
+        wsPort: process.env.REACT_APP_PUSHER_APP_PORT,
+        forceTLS: (process.env.REACT_APP_PUSHER_APP_SCHEME ?? 'https') === 'https',
+        enabledTransports: ['ws', 'wss'],
+        authorizer: (channel, options) => {
+          return {
+            authorize: (socketId, callback) => {
+              http
+                .post('/broadcasting/auth', {
+                  socket_id: socketId,
+                  channel_name: channel.name
+                })
+                .then((response) => {
+                  callback(false, response.data)
+                })
+                .catch((error) => {
+                  callback(true, error)
+                })
+            }
           }
         }
-      }
-    })
+      })
 
-    window.Echo.join('group-chat')
-      .here((users) => {
-        setStoreChat((prev) => ({
-          ...prev,
-          onlineUsers: users ? users.filter((user) => user.op_id !== profile?.op_id) : []
-        }))
-      })
-      .joining((user) => {
-        setStoreChat((prev) => ({
-          ...prev,
-          onlineUsers: [...(prev?.onlineUsers || []), user]
-        }))
-      })
-      .leaving((user) => {
-        setStoreChat((prev) => ({
-          ...prev,
-          onlineUsers: (prev?.onlineUsers || []).filter((u) => u.op_id !== user.op_id)
-        }))
-      })
-      .listen('NewMessageEvent', (e) => {
-        if (!profile?.op_id || !e?.message) return
+      window.Echo.join('group-chat')
+        .here((users) => {
+          setStoreChat((prev) => ({
+            ...prev,
+            onlineUsers: users ? users.filter((user) => user.op_id !== profile?.op_id) : []
+          }))
+        })
+        .joining((user) => {
+          setStoreChat((prev) => ({
+            ...prev,
+            onlineUsers: [...(prev?.onlineUsers || []), user]
+          }))
+        })
+        .leaving((user) => {
+          setStoreChat((prev) => ({
+            ...prev,
+            onlineUsers: (prev?.onlineUsers || []).filter((u) => u.op_id !== user.op_id)
+          }))
+        })
+        .listen('NewMessageEvent', (e) => {
+          if (!profile?.op_id || !e?.message) return
 
-        if (!isSender(e.message)) {
+          if (!isSender(e.message)) {
+            setStoreChat((prev) => {
+              if (e.message.parent_message_id) {
+                return {
+                  ...prev,
+                  messages: prev.messages.map((m) => {
+                    if (m.message_id === e.message.parent_message_id) {
+                      return {
+                        ...m,
+                        replies: [...(m.replies || []), e.message]
+                      }
+                    }
+                    return m
+                  })
+                }
+              }
+              return {
+                ...prev,
+                messages: [...(prev?.messages || []), e.message]
+              }
+            })
+          }
+        })
+        .listen('UpdateMessageEvent', (e) => {
+          handleUpdateMessage(e.message, e.type)
+        })
+
+      window.Echo.private(`user-chat.${profile?.op_id}`)
+        .listen('NewMessageEvent', (e) => {
           setStoreChat((prev) => {
             if (e.message.parent_message_id) {
               return {
@@ -126,45 +162,19 @@ const DashboardPage = (props) => {
             }
             return {
               ...prev,
-              messages: [...(prev?.messages || []), e.message]
+              messages: [...prev.messages, e.message]
             }
           })
-        }
-      })
-      .listen('UpdateMessageEvent', (e) => {
-        handleUpdateMessage(e.message, e.type)
-      })
-
-    window.Echo.private(`user-chat.${profile?.op_id}`)
-      .listen('NewMessageEvent', (e) => {
-        setStoreChat((prev) => {
-          if (e.message.parent_message_id) {
-            return {
-              ...prev,
-              messages: prev.messages.map((m) => {
-                if (m.message_id === e.message.parent_message_id) {
-                  return {
-                    ...m,
-                    replies: [...(m.replies || []), e.message]
-                  }
-                }
-                return m
-              })
-            }
-          }
-          return {
-            ...prev,
-            messages: [...prev.messages, e.message]
-          }
         })
-      })
-      .listen('UpdateMessageEvent', (e) => {
-        handleUpdateMessage(e.message, e.type)
-      })
+        .listen('UpdateMessageEvent', (e) => {
+          handleUpdateMessage(e.message, e.type)
+        })
+    }
+    document.addEventListener('ReconnectEcho', handleConnectEcho)
+    document.dispatchEvent(new Event('ReconnectEcho'))
 
     return () => {
-      window.Echo.disconnect()
-
+      document.removeEventListener('ReconnectEcho', handleConnectEcho)
       setStoreChat((prev) => ({
         ...prev,
         messages: [],

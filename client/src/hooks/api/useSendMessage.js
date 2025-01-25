@@ -64,6 +64,7 @@ export default function useSendMessage(ref = null) {
 
       if (response?.data?.success && !profile.color_id) {
         await refetchUser()
+        document.dispatchEvent(new Event('ReconnectEcho'))
       }
 
       if (response?.data?.data?.message_id) {

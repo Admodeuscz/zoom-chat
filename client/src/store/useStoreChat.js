@@ -6,7 +6,9 @@ const useStoreChat = create((set) => ({
   messages: [],
   previousDay: null,
   onlineUsers: [],
-  active_user: null
+  active_user: null,
+  isShowMembers: false,
+  isShowChat: true,
 }))
 
 export default useStoreChat
